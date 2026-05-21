@@ -1,0 +1,261 @@
+import SwiftUI
+
+struct SummaryCard: View {
+    let greeting: String
+    let netBalance: Decimal
+    let income: Decimal
+    let expenses: Decimal
+    let currencySymbol: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(greeting)
+                .font(.appBody())
+                .foregroundStyle(.white.opacity(0.9))
+
+            Text("Net Balance Today")
+                .font(.appSmall())
+                .foregroundStyle(.white.opacity(0.7))
+
+            Text(MoneyFormat.string(netBalance, symbol: currencySymbol, signed: true))
+                .font(.system(size: 34, weight: .bold))
+                .foregroundStyle(.white)
+
+            HStack(spacing: 0) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Income")
+                        .font(.appSmall())
+                        .foregroundStyle(.white.opacity(0.7))
+                    Text(MoneyFormat.string(income, symbol: currencySymbol))
+                        .font(.system(size: 15, weight: .bold))
+                        .foregroundStyle(AppTheme.primaryLight)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                Rectangle()
+                    .fill(.white.opacity(0.25))
+                    .frame(width: 1, height: 32)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Expenses")
+                        .font(.appSmall())
+                        .foregroundStyle(.white.opacity(0.7))
+                    Text(MoneyFormat.string(expenses, symbol: currencySymbol))
+                        .font(.system(size: 15, weight: .bold))
+                        .foregroundStyle(Color(red: 1, green: 0.85, blue: 0.85))
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(12)
+            .background(.white.opacity(0.15), in: RoundedRectangle(cornerRadius: 12))
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(AppTheme.summaryGradient, in: RoundedRectangle(cornerRadius: 24))
+        .shadow(color: AppTheme.primary.opacity(0.3), radius: 16, y: 8)
+    }
+}
+
+struct BannerRow: View {
+    let icon: String
+    let title: String
+    var subtitle: String? = nil
+    let tint: Color
+
+    var body: some View {
+        HStack(alignment: .center, spacing: 12) {
+            if subtitle == nil {
+                Text(icon)
+                    .font(.system(size: 14))
+            } else {
+                Text(icon)
+                    .font(.system(size: 22))
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(subtitle == nil ? .appCaption() : .appBody())
+                    .fontWeight(subtitle == nil ? .medium : .semibold)
+                    .foregroundStyle(tint)
+                if let subtitle {
+                    Text(subtitle)
+                        .font(.appSmall())
+                        .foregroundStyle(AppTheme.textSecondary)
+                }
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, subtitle == nil ? 12 : 10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(tint.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(tint.opacity(0.25), lineWidth: 1)
+        )
+    }
+}
+
+struct QuickActionButton: View {
+    let emoji: String
+    let title: String
+    let action: () -> Void
+    @State private var pressed = false
+
+    var body: some View {
+        Button {
+            withAnimation(AppAnimations.tagSpring) { pressed = true }
+            action()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                withAnimation(AppAnimations.tagSpring) { pressed = false }
+            }
+        } label: {
+            VStack(spacing: 8) {
+                Text(emoji)
+                    .font(.system(size: 22))
+                Text(title)
+                    .font(.appSmall())
+                    .foregroundStyle(AppTheme.textPrimary)
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 76)
+            .background(.white, in: RoundedRectangle(cornerRadius: 14))
+            .shadow(color: .black.opacity(0.05), radius: 6, y: 2)
+        }
+        .buttonStyle(.plain)
+        .scaleEffect(pressed ? 0.94 : 1)
+    }
+}
+
+struct TransactionRow: View {
+    let tag: ExpenseTag
+    let title: String
+    let subtitle: String
+    let amount: Decimal
+    let currencySymbol: String
+    let isIncome: Bool
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Text(tag.emoji)
+                .font(.system(size: 18))
+                .frame(width: 40, height: 40)
+                .background(tag.color.opacity(0.15), in: RoundedRectangle(cornerRadius: 10))
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.appBody())
+                    .foregroundStyle(AppTheme.textPrimary)
+                Text(subtitle)
+                    .font(.appSmall())
+                    .foregroundStyle(AppTheme.textSecondary)
+            }
+
+            Spacer()
+
+            Text(isIncome ? MoneyFormat.string(amount, symbol: currencySymbol, signed: true) : "-\(MoneyFormat.string(amount, symbol: currencySymbol))")
+                .font(.system(size: 15, weight: .bold))
+                .foregroundStyle(isIncome ? AppTheme.income : AppTheme.expense)
+        }
+        .padding(14)
+        .background(.white, in: RoundedRectangle(cornerRadius: 14))
+        .shadow(color: .black.opacity(0.04), radius: 6, y: 2)
+    }
+}
+
+struct TagChip: View {
+    let tag: ExpenseTag
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                Text(tag.emoji)
+                    .font(.system(size: 14))
+                Text(tag.name)
+                    .font(.appCaption())
+                    .fontWeight(.medium)
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .foregroundStyle(isSelected ? .white : tag.color)
+            .background(
+                isSelected ? AnyShapeStyle(tag.color) : AnyShapeStyle(tag.color.opacity(0.12)),
+                in: Capsule()
+            )
+            .overlay(
+                Capsule()
+                    .stroke(tag.color.opacity(isSelected ? 0 : 0.3), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .animation(.spring(response: 0.3, dampingFraction: 0.65), value: isSelected)
+    }
+}
+
+struct PrimaryButton: View {
+    let title: String
+    var gradient: LinearGradient = AppTheme.incomeGradient
+    let action: () -> Void
+    @State private var pressed = false
+
+    var body: some View {
+        Button {
+            withAnimation(AppAnimations.tagSpring) { pressed = true }
+            action()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
+                withAnimation(AppAnimations.tagSpring) { pressed = false }
+            }
+        } label: {
+            Text(title)
+                .font(.appSubheadline())
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .frame(height: 54)
+                .background(gradient, in: RoundedRectangle(cornerRadius: 16))
+                .shadow(color: AppTheme.primary.opacity(0.3), radius: 12, y: 6)
+        }
+        .buttonStyle(.plain)
+        .scaleEffect(pressed ? 0.97 : 1)
+        .accessibilityLabel(title)
+        .accessibilityAddTraits(.isButton)
+    }
+}
+
+struct FlowTagLayout: Layout {
+    var spacing: CGFloat = 8
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let result = arrange(proposal: proposal, subviews: subviews)
+        return result.size
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        let result = arrange(proposal: proposal, subviews: subviews)
+        for (index, position) in result.positions.enumerated() {
+            subviews[index].place(at: CGPoint(x: bounds.minX + position.x, y: bounds.minY + position.y), proposal: .unspecified)
+        }
+    }
+
+    private func arrange(proposal: ProposedViewSize, subviews: Subviews) -> (size: CGSize, positions: [CGPoint]) {
+        let maxWidth = proposal.width ?? .infinity
+        var x: CGFloat = 0
+        var y: CGFloat = 0
+        var rowHeight: CGFloat = 0
+        var positions: [CGPoint] = []
+
+        for subview in subviews {
+            let size = subview.sizeThatFits(.unspecified)
+            if x + size.width > maxWidth, x > 0 {
+                x = 0
+                y += rowHeight + spacing
+                rowHeight = 0
+            }
+            positions.append(CGPoint(x: x, y: y))
+            rowHeight = max(rowHeight, size.height)
+            x += size.width + spacing
+        }
+
+        return (CGSize(width: maxWidth, height: y + rowHeight), positions)
+    }
+}
