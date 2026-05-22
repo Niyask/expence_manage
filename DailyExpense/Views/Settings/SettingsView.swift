@@ -21,6 +21,7 @@ struct SettingsView: View {
                     settingsGroup("Preferences", rows: preferenceRows)
                     settingsGroup("Tags", rows: tagRows)
                     settingsGroup("Data", rows: dataRows)
+                    dataRetentionCard
                     securityNote
 
                     Text("Daily Expense v1.0 · iOS 17+")
@@ -42,7 +43,7 @@ struct SettingsView: View {
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("Enable notifications in iOS Settings to receive your evening report reminder.")
+                Text("Enable notifications in iOS Settings to receive your bedtime summary at \(store.settings.bedtimeTimeLabel).")
             }
         }
     }
@@ -69,9 +70,11 @@ struct SettingsView: View {
                 Text("🌙")
                     .font(.system(size: 24))
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Evening Report Time")
+                    Text("Bedtime Reminder")
                         .font(.appSubheadline())
-                    Text("Daily summary at configured time")
+                    Text(store.settings.hasConfiguredBedtime
+                         ? "Daily summary at \(store.settings.bedtimeTimeLabel)"
+                         : "Default \(store.settings.bedtimeTimeLabel) · tap to customize")
                         .font(.appSmall())
                         .foregroundStyle(AppTheme.textSecondary)
                 }
@@ -110,6 +113,7 @@ struct SettingsView: View {
                 let c = Calendar.current.dateComponents([.hour, .minute], from: newDate)
                 store.settings.eveningReportHour = c.hour ?? 20
                 store.settings.eveningReportMinute = c.minute ?? 0
+                store.settings.hasConfiguredBedtime = true
             }
         )
     }
@@ -138,7 +142,7 @@ struct SettingsView: View {
             SettingsRow(icon: "💰", title: "Currency", value: "INR (₹)"),
             SettingsRow(
                 icon: "🔔",
-                title: "Evening notifications",
+                title: "Bedtime notifications",
                 subtitle: notificationStatus,
                 toggleBinding: notificationsBinding
             ),
@@ -182,9 +186,28 @@ struct SettingsView: View {
 
     private var dataRows: [SettingsRow] {
         [
+            SettingsRow(
+                icon: "📅",
+                title: "Data retention",
+                subtitle: "Last \(ExpenseStore.maxRetentionMonths) months · week-by-week"
+            ),
             SettingsRow(icon: "📤", title: "Export Data", value: "Coming soon"),
             SettingsRow(icon: "☁️", title: "Backup", value: "Local only"),
         ]
+    }
+
+    private var dataRetentionCard: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Storage policy")
+                .font(.appCaption())
+                .foregroundStyle(AppTheme.textSecondary)
+            Text("Transactions older than \(ExpenseStore.maxRetentionMonths) months are removed automatically. Each month is summarized week-by-week in Reports and All Transactions.")
+                .font(.appSmall())
+                .foregroundStyle(AppTheme.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(16)
+        .background(AppTheme.accentOrange.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
     }
 
     private var securityNote: some View {
@@ -204,7 +227,9 @@ struct SettingsView: View {
         let status = await NotificationScheduler.shared.authorizationStatus()
         switch status {
         case .authorized:
-            notificationStatus = store.settings.notificationsEnabled ? "On · scheduled daily" : "Authorized · toggle off"
+            notificationStatus = store.settings.notificationsEnabled
+                ? "On · \(store.settings.bedtimeTimeLabel) daily"
+                : "Authorized · toggle off"
         case .denied:
             notificationStatus = "Off · enable in iOS Settings"
         case .notDetermined:

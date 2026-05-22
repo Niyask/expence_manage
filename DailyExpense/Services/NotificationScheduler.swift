@@ -5,8 +5,10 @@ import UserNotifications
 final class NotificationScheduler {
     static let shared = NotificationScheduler()
 
+    static let eveningDateUserInfoKey = "eveningReportDate"
+    static let eveningIdentifier = "com.dailyexpense.bedtime-report"
+
     private let center = UNUserNotificationCenter.current()
-    private let eveningIdentifier = "com.dailyexpense.evening-report"
 
     enum AuthorizationStatus {
         case notDetermined
@@ -35,8 +37,8 @@ final class NotificationScheduler {
         }
     }
 
-    func scheduleEveningReport(hour: Int, minute: Int, enabled: Bool) async {
-        center.removePendingNotificationRequests(withIdentifiers: [eveningIdentifier])
+    func scheduleBedtimeReport(hour: Int, minute: Int, bedtimeLabel: String, enabled: Bool) async {
+        center.removePendingNotificationRequests(withIdentifiers: [Self.eveningIdentifier])
         guard enabled else { return }
 
         let status = await authorizationStatus()
@@ -47,12 +49,15 @@ final class NotificationScheduler {
         date.minute = min(59, max(0, minute))
 
         let content = UNMutableNotificationContent()
-        content.title = "Evening Report"
-        content.body = "Tap to review today's income, expenses, and savings."
+        content.title = "Bedtime summary · \(bedtimeLabel)"
+        content.body = "Tap to see today's income and expenses, sorted by amount."
         content.sound = .default
+        content.userInfo = [
+            Self.eveningDateUserInfoKey: ISO8601DateFormatter().string(from: Date())
+        ]
 
         let trigger = UNCalendarNotificationTrigger(dateMatching: date, repeats: true)
-        let request = UNNotificationRequest(identifier: eveningIdentifier, content: content, trigger: trigger)
+        let request = UNNotificationRequest(identifier: Self.eveningIdentifier, content: content, trigger: trigger)
         try? await center.add(request)
     }
 }

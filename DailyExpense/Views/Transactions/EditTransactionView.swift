@@ -1,0 +1,154 @@
+import SwiftUI
+
+struct EditTransactionView: View {
+    @EnvironmentObject private var store: ExpenseStore
+    @Environment(\.dismiss) private var dismiss
+
+    let transaction: Transaction
+
+    @State private var amountText: String
+    @State private var selectedTag: ExpenseTag?
+    @State private var note: String
+    @State private var date: Date
+    @State private var entryType: TransactionType
+
+    init(transaction: Transaction) {
+        self.transaction = transaction
+        let amount = MoneyFormat.decimalValue(transaction.amount)
+        _amountText = State(initialValue: amount == floor(amount) ? String(Int(amount)) : String(amount))
+        _note = State(initialValue: transaction.note)
+        _date = State(initialValue: transaction.date)
+        _entryType = State(initialValue: transaction.type)
+        _selectedTag = State(initialValue: nil)
+    }
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+                    entryTypeToggle
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Amount")
+                            .font(.appCaption())
+                            .foregroundStyle(AppTheme.textSecondary)
+                        HStack(alignment: .firstTextBaseline, spacing: 4) {
+                            Text(store.settings.currencySymbol)
+                                .font(.system(size: 48, weight: .bold))
+                            TextField("0", text: $amountText)
+                                .font(.system(size: 48, weight: .bold))
+                                .keyboardType(.decimalPad)
+                        }
+                        Rectangle()
+                            .fill(entryType == .income ? AnyShapeStyle(AppTheme.incomeGradient) : AnyShapeStyle(AppTheme.summaryGradient))
+                            .frame(height: 3)
+                            .cornerRadius(2)
+                    }
+
+                    Text(entryType == .income ? "Income Source" : "Category")
+                        .font(.appSubheadline())
+
+                    FlowTagLayout(spacing: 10) {
+                        ForEach(store.tags(for: entryType)) { tag in
+                            TagChip(tag: tag, isSelected: selectedTag?.id == tag.id) {
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                                    selectedTag = tag
+                                }
+                            }
+                        }
+                    }
+
+                    TextField("Note (optional)", text: $note)
+                        .padding()
+                        .background(.white, in: RoundedRectangle(cornerRadius: 14))
+
+                    DatePicker("Date", selection: $date, displayedComponents: [.date, .hourAndMinute])
+                        .padding()
+                        .background(.white, in: RoundedRectangle(cornerRadius: 14))
+                }
+                .padding(24)
+            }
+            .background(AppTheme.background)
+            .navigationTitle("Edit Transaction")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+            }
+            .onAppear {
+                if selectedTag == nil {
+                    selectedTag = store.tag(for: transaction.tagId)
+                }
+            }
+            .safeAreaInset(edge: .bottom) {
+                VStack(spacing: 10) {
+                    PrimaryButton(
+                        title: "Save Changes",
+                        gradient: entryType == .income ? AppTheme.incomeGradient : AppTheme.summaryGradient
+                    ) {
+                        save()
+                    }
+                    .disabled(!canSave)
+                    .opacity(canSave ? 1 : 0.5)
+
+                    Button(role: .destructive) {
+                        store.deleteTransaction(id: transaction.id)
+                        dismiss()
+                    } label: {
+                        Text("Delete Transaction")
+                            .font(.appSubheadline())
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 48)
+                    }
+                }
+                .padding()
+            }
+        }
+    }
+
+    private var entryTypeToggle: some View {
+        HStack(spacing: 0) {
+            typeButton("Expense", type: .expense)
+            typeButton("Income", type: .income)
+        }
+        .padding(4)
+        .background(Color(red: 0.94, green: 0.95, blue: 0.96), in: RoundedRectangle(cornerRadius: 10))
+    }
+
+    private func typeButton(_ title: String, type: TransactionType) -> some View {
+        Button {
+            entryType = type
+            if selectedTag?.type != type {
+                selectedTag = store.tags(for: type).first
+            }
+        } label: {
+            Text(title)
+                .font(.appCaption())
+                .fontWeight(entryType == type ? .semibold : .regular)
+                .foregroundStyle(entryType == type ? .white : AppTheme.textSecondary)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
+                .background(entryType == type ? (type == .income ? AppTheme.income : AppTheme.primary) : .clear, in: RoundedRectangle(cornerRadius: 8))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var canSave: Bool {
+        selectedTag != nil && InputValidator.parseAmount(from: amountText) != nil
+    }
+
+    private func save() {
+        guard let tag = selectedTag,
+              let amount = InputValidator.parseAmount(from: amountText) else { return }
+        guard store.updateTransaction(
+            id: transaction.id,
+            amount: amount,
+            tag: tag,
+            note: note,
+            date: date,
+            type: entryType
+        ) else { return }
+        dismiss()
+    }
+}

@@ -53,14 +53,43 @@ struct AppSettings: Codable, Equatable {
     var displayName: String = ""
     var eveningReportHour: Int = 20
     var eveningReportMinute: Int = 0
+    var hasConfiguredBedtime: Bool = false
     var weeklyInsightsEnabled: Bool = true
     var notificationsEnabled: Bool = true
+    var hasCompletedOnboarding: Bool = false
     var currencySymbol: String = "₹"
 
     var greetingName: String {
         let trimmed = displayName.trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmed.isEmpty ? "there" : trimmed
     }
+
+    var bedtimeTimeLabel: String {
+        MoneyFormat.reportTime(hour: eveningReportHour, minute: eveningReportMinute)
+    }
+}
+
+/// One calendar week inside a stored month (max 2 months retained).
+struct WeekArchive: Identifiable, Hashable {
+    let id: String
+    let label: String
+    let interval: DateInterval
+    let income: Decimal
+    let expense: Decimal
+    let transactionCount: Int
+
+    var net: Decimal { income - expense }
+}
+
+/// Month bucket with week-by-week breakdown (retention window only).
+struct MonthArchive: Identifiable, Hashable {
+    let id: String
+    let title: String
+    let weeks: [WeekArchive]
+    let income: Decimal
+    let expense: Decimal
+
+    var net: Decimal { income - expense }
 }
 
 extension Color {
