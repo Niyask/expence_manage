@@ -4,7 +4,7 @@ options:
   deploymentTarget:
     iOS: "16.0"
 settings:
-  SWIFT_VERSION: "5.9"
+  SWIFT_VERSION: "5.7"
 targets:
   DailyExpense:
     type: application
@@ -17,6 +17,7 @@ targets:
       CURRENT_PROJECT_VERSION: "1"
       PRODUCT_BUNDLE_IDENTIFIER: com.dailyexpense.app
       CODE_SIGN_STYLE: Automatic
+      DEVELOPMENT_TEAM: 92VCTKP3LK
       ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
       INFOPLIST_KEY_CFBundleDisplayName: Daily Expense
       INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES

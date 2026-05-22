@@ -29,36 +29,40 @@ struct FinancialReportView: View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Financial Report")
-                        .font(.appTitle())
-                        .foregroundStyle(AppTheme.textPrimary)
+                    Group {
+                        Text("Financial Report")
+                            .font(.appTitle())
+                            .foregroundStyle(AppTheme.textPrimary)
 
-                    periodPicker
+                        periodPicker
 
-                    quickStatsRow
-                        .animation(AppAnimations.cardSpring, value: period)
+                        quickStatsRow
+                            .animation(AppAnimations.cardSpring, value: period)
 
-                    netBalanceCard
-                        .animation(AppAnimations.cardSpring, value: period)
+                        netBalanceCard
+                            .animation(AppAnimations.cardSpring, value: period)
 
-                    HStack(spacing: 12) {
-                        splitCard(title: "↑ Income", amount: incomeTotal, color: AppTheme.income)
-                        splitCard(title: "↓ Expenses", amount: expenseTotal, color: AppTheme.expense)
+                        HStack(spacing: 12) {
+                            splitCard(title: "↑ Income", amount: incomeTotal, color: AppTheme.income)
+                            splitCard(title: "↓ Expenses", amount: expenseTotal, color: AppTheme.expense)
+                        }
+
+                        spendingOverviewCard
                     }
 
-                    spendingOverviewCard
+                    Group {
+                        incomeSection
 
-                    incomeSection
+                        expenseSection
 
-                    expenseSection
+                        if period == .month {
+                            monthWeekHistoryCard
+                        }
 
-                    if period == .month {
-                        monthWeekHistoryCard
+                        savingsTipCard
+
+                        weeklyLinkButton
                     }
-
-                    savingsTipCard
-
-                    weeklyLinkButton
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 8)

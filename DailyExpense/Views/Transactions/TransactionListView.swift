@@ -19,58 +19,8 @@ struct TransactionListView: View {
 
     var body: some View {
         List {
-            Section {
-                lifetimeSummaryCard
-                retentionNotice
-                sortToggle
-            }
-            .listRowInsets(EdgeInsets(top: 8, leading: 24, bottom: 8, trailing: 24))
-            .listRowSeparator(.hidden)
-            .listRowBackground(Color.clear)
-
-            if sortedTransactions.isEmpty {
-                Section {
-                    emptyState
-                }
-                .listRowInsets(EdgeInsets(top: 0, leading: 24, bottom: 0, trailing: 24))
-                .listRowSeparator(.hidden)
-                .listRowBackground(Color.clear)
-            } else {
-                Section {
-                    ForEach(sortedTransactions) { tx in
-                        if let tag = store.tag(for: tx.tagId) {
-                            TransactionRow(
-                                tag: tag,
-                                title: tx.note.isEmpty ? tag.name : tx.note,
-                                subtitle: MoneyFormat.daySubtitle(tx.date),
-                                amount: tx.amount,
-                                currencySymbol: store.settings.currencySymbol,
-                                isIncome: tx.type == .income
-                            )
-                            .contentShape(Rectangle())
-                            .onTapGesture { transactionToEdit = tx }
-                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                Button(role: .destructive) {
-                                    pendingDeleteId = tx.id
-                                    showDeleteConfirm = true
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
-                                }
-                                Button {
-                                    transactionToEdit = tx
-                                } label: {
-                                    Label("Edit", systemImage: "pencil")
-                                }
-                                .tint(AppTheme.primary)
-                            }
-                            .listRowInsets(EdgeInsets(top: 4, leading: 24, bottom: 4, trailing: 24))
-                            .listRowSeparator(.hidden)
-                            .listRowBackground(Color.clear)
-                        }
-                    }
-                }
-            }
-
+            headerSection
+            transactionsSection
             monthHistorySection
         }
         .listStyle(.plain)
@@ -94,6 +44,68 @@ struct TransactionListView: View {
             }
         } message: {
             Text("This cannot be undone.")
+        }
+    }
+
+    private var headerSection: some View {
+        Section {
+            lifetimeSummaryCard
+            retentionNotice
+            sortToggle
+        }
+        .listRowInsets(EdgeInsets(top: 8, leading: 24, bottom: 8, trailing: 24))
+        .listRowSeparator(.hidden)
+        .listRowBackground(Color.clear)
+    }
+
+    @ViewBuilder
+    private var transactionsSection: some View {
+        if sortedTransactions.isEmpty {
+            Section {
+                emptyState
+            }
+            .listRowInsets(EdgeInsets(top: 0, leading: 24, bottom: 0, trailing: 24))
+            .listRowSeparator(.hidden)
+            .listRowBackground(Color.clear)
+        } else {
+            Section {
+                ForEach(sortedTransactions) { tx in
+                    transactionRow(for: tx)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func transactionRow(for tx: Transaction) -> some View {
+        if let tag = store.tag(for: tx.tagId) {
+            TransactionRow(
+                tag: tag,
+                title: tx.note.isEmpty ? tag.name : tx.note,
+                subtitle: MoneyFormat.daySubtitle(tx.date),
+                amount: tx.amount,
+                currencySymbol: store.settings.currencySymbol,
+                isIncome: tx.type == .income
+            )
+            .contentShape(Rectangle())
+            .onTapGesture { transactionToEdit = tx }
+            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                Button(role: .destructive) {
+                    pendingDeleteId = tx.id
+                    showDeleteConfirm = true
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
+                Button {
+                    transactionToEdit = tx
+                } label: {
+                    Label("Edit", systemImage: "pencil")
+                }
+                .tint(AppTheme.primary)
+            }
+            .listRowInsets(EdgeInsets(top: 4, leading: 24, bottom: 4, trailing: 24))
+            .listRowSeparator(.hidden)
+            .listRowBackground(Color.clear)
         }
     }
 
