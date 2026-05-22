@@ -53,7 +53,7 @@ struct AnimatedProgressBar: View {
         }
         .frame(height: 6)
         .onAppear { setProgress(progress) }
-        .onChange(of: progress) { _, newValue in
+        .onChange(of: progress) { newValue in
             setProgress(newValue)
         }
     }

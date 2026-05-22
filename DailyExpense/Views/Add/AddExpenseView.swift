@@ -76,7 +76,7 @@ struct AddExpenseView: View {
             .onAppear {
                 selectedTag = store.tags(for: .expense).first
             }
-            .onChange(of: entryType) { _, newType in
+            .onChange(of: entryType) { newType in
                 selectedTag = store.tags(for: newType).first
             }
         }

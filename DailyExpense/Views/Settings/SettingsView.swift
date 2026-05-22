@@ -23,7 +23,7 @@ struct SettingsView: View {
                     settingsGroup("Data", rows: dataRows)
                     securityNote
 
-                    Text("Daily Expense v1.0 · iOS 17+")
+                    Text("Daily Expense v1.0 · iOS 16+")
                         .font(.appSmall())
                         .foregroundStyle(AppTheme.textSecondary)
                         .frame(maxWidth: .infinity)
