@@ -21,7 +21,7 @@ targets:
       INFOPLIST_KEY_CFBundleDisplayName: Daily Expense
       INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
       INFOPLIST_KEY_UILaunchScreen_Generation: YES
-      INFOPLIST_KEY_NSUserNotificationsUsageDescription: "Daily Expense sends your evening spending summary at the time you set in Settings."
+      INFOPLIST_KEY_NSUserNotificationsUsageDescription: "Daily Expense sends your bedtime spending summary at the time you set in Settings. Tap the notification to see today's transactions sorted by amount."
       INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO
       TARGETED_DEVICE_FAMILY: "1"
       ENABLE_USER_SCRIPT_SANDBOXING: YES

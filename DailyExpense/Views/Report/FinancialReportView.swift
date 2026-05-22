@@ -52,6 +52,10 @@ struct FinancialReportView: View {
 
                     expenseSection
 
+                    if period == .month {
+                        monthWeekHistoryCard
+                    }
+
                     savingsTipCard
 
                     weeklyLinkButton
@@ -326,6 +330,38 @@ struct FinancialReportView: View {
             return "Spending exceeded income by \(MoneyFormat.string(expenseTotal - incomeTotal, symbol: store.settings.currencySymbol))"
         }
         return "Track daily to improve your savings rate"
+    }
+
+    private var monthWeekHistoryCard: some View {
+        let archives = store.monthArchives()
+        return VStack(alignment: .leading, spacing: 10) {
+            Text("This month · week by week")
+                .font(.appSubheadline())
+            if archives.isEmpty {
+                Text("No data in the last \(ExpenseStore.maxRetentionMonths) months")
+                    .font(.appCaption())
+                    .foregroundStyle(AppTheme.textSecondary)
+            } else if let current = archives.first {
+                ForEach(current.weeks) { week in
+                    HStack {
+                        Text(week.label)
+                            .font(.appCaption())
+                        Spacer()
+                        Text(MoneyFormat.string(week.net, symbol: store.settings.currencySymbol, signed: true))
+                            .font(.appCaption())
+                            .fontWeight(.semibold)
+                            .foregroundStyle(week.net >= 0 ? AppTheme.income : AppTheme.expense)
+                    }
+                }
+                Text("Data older than \(ExpenseStore.maxRetentionMonths) months is removed automatically.")
+                    .font(.appSmall())
+                    .foregroundStyle(AppTheme.textSecondary)
+            }
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(.white, in: RoundedRectangle(cornerRadius: 16))
+        .shadow(color: .black.opacity(0.04), radius: 6, y: 2)
     }
 
     private var weeklyLinkButton: some View {

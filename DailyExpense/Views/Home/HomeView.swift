@@ -7,6 +7,8 @@ struct HomeView: View {
     @State private var showAddIncome = false
     @State private var showWeekly = false
     @State private var showEveningReport = false
+    @State private var showAllTransactions = false
+    @State private var transactionToEdit: Transaction?
 
     private var today: Date { Date() }
 
@@ -23,10 +25,16 @@ struct HomeView: View {
                     )
                     .appearOnLoad(delay: 0)
 
+                    if store.transactions.isEmpty {
+                        emptyStartCard
+                            .appearOnLoad(delay: AppAnimations.staggerDelay)
+                    }
+
                     Button { showEveningReport = true } label: {
                         BannerRow(
                             icon: "🌙",
-                            title: "Evening report at \(MoneyFormat.reportTime(hour: store.settings.eveningReportHour, minute: store.settings.eveningReportMinute))",
+                            title: "Bedtime summary at \(store.settings.bedtimeTimeLabel)",
+                            subtitle: store.settings.hasConfiguredBedtime ? nil : "Default time · change in Settings",
                             tint: AppTheme.secondary
                         )
                     }
@@ -67,24 +75,44 @@ struct HomeView: View {
                         Text("Recent Transactions")
                             .font(.appHeadline())
                         Spacer()
-                        Text("See all")
+                        Button("See all") { showAllTransactions = true }
                             .font(.appCaption())
                             .foregroundStyle(AppTheme.primary)
                     }
                     .padding(.top, 4)
                     .appearOnLoad(delay: AppAnimations.staggerDelay * 5)
 
-                    ForEach(Array(recentTransactions.enumerated()), id: \.element.id) { index, tx in
-                        if let tag = store.tag(for: tx.tagId) {
-                            TransactionRow(
-                                tag: tag,
-                                title: tx.note.isEmpty ? tag.name : tx.note,
-                                subtitle: MoneyFormat.daySubtitle(tx.date),
-                                amount: tx.amount,
-                                currencySymbol: store.settings.currencySymbol,
-                                isIncome: tx.type == .income
-                            )
-                            .appearOnLoad(delay: AppAnimations.staggerDelay * 6 + Double(index) * 0.04)
+                    if recentTransactions.isEmpty {
+                        Text("Your list starts empty. Add income or expenses to track from zero.")
+                            .font(.appCaption())
+                            .foregroundStyle(AppTheme.textSecondary)
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(.white, in: RoundedRectangle(cornerRadius: 14))
+                    } else {
+                        ForEach(Array(recentTransactions.enumerated()), id: \.element.id) { index, tx in
+                            if let tag = store.tag(for: tx.tagId) {
+                                TransactionRow(
+                                    tag: tag,
+                                    title: tx.note.isEmpty ? tag.name : tx.note,
+                                    subtitle: MoneyFormat.daySubtitle(tx.date),
+                                    amount: tx.amount,
+                                    currencySymbol: store.settings.currencySymbol,
+                                    isIncome: tx.type == .income
+                                )
+                                .onTapGesture { transactionToEdit = tx }
+                                .contextMenu {
+                                    Button { transactionToEdit = tx } label: {
+                                        Label("Edit", systemImage: "pencil")
+                                    }
+                                    Button(role: .destructive) {
+                                        store.deleteTransaction(id: tx.id)
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
+                                .appearOnLoad(delay: AppAnimations.staggerDelay * 6 + Double(index) * 0.04)
+                            }
                         }
                     }
                 }
@@ -97,13 +125,38 @@ struct HomeView: View {
             .sheet(isPresented: $showAddIncome) {
                 AddIncomeView()
             }
+            .sheet(item: $transactionToEdit) { tx in
+                EditTransactionView(transaction: tx)
+                    .environmentObject(store)
+            }
             .navigationDestination(isPresented: $showWeekly) {
                 WeeklyInsightsView()
             }
             .navigationDestination(isPresented: $showEveningReport) {
                 EveningReportView(date: today)
             }
+            .navigationDestination(isPresented: $showAllTransactions) {
+                TransactionListView()
+            }
         }
+    }
+
+    private var emptyStartCard: some View {
+        HStack(alignment: .top, spacing: 10) {
+            Text("✨")
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Starting from 0 transactions")
+                    .font(.appCaption())
+                    .fontWeight(.semibold)
+                    .foregroundStyle(AppTheme.primary)
+                Text("Income and expenses count from your first entry. Lifetime totals appear in See all.")
+                    .font(.appSmall())
+                    .foregroundStyle(AppTheme.textSecondary)
+            }
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(AppTheme.primary.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
     }
 
     private var greetingText: String {
