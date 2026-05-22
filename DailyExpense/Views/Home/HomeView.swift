@@ -21,7 +21,8 @@ struct HomeView: View {
                         netBalance: store.netBalance(on: today),
                         income: store.total(for: .income, on: today),
                         expenses: store.total(for: .expense, on: today),
-                        currencySymbol: store.settings.currencySymbol
+                        currencySymbol: store.settings.currencySymbol,
+                        currencyLocaleIdentifier: store.settings.currencyLocaleIdentifier
                     )
                     .appearOnLoad(delay: 0)
 
@@ -30,7 +31,9 @@ struct HomeView: View {
                             .appearOnLoad(delay: AppAnimations.staggerDelay)
                     }
 
-                    Button { showEveningReport = true } label: {
+                    Button {
+                        withAnimation(AppAnimations.sheetSpring) { showEveningReport = true }
+                    } label: {
                         BannerRow(
                             icon: "🌙",
                             title: "Bedtime summary at \(store.settings.bedtimeTimeLabel)",
@@ -41,7 +44,9 @@ struct HomeView: View {
                     .buttonStyle(.plain)
                     .appearOnLoad(delay: AppAnimations.staggerDelay)
 
-                    Button { showAddIncome = true } label: {
+                    Button {
+                        withAnimation(AppAnimations.sheetSpring) { showAddIncome = true }
+                    } label: {
                         BannerRow(
                             icon: "💼",
                             title: "Add Income",
@@ -98,6 +103,7 @@ struct HomeView: View {
                                     subtitle: MoneyFormat.daySubtitle(tx.date),
                                     amount: tx.amount,
                                     currencySymbol: store.settings.currencySymbol,
+                                    currencyLocaleIdentifier: store.settings.currencyLocaleIdentifier,
                                     isIncome: tx.type == .income
                                 )
                                 .onTapGesture { transactionToEdit = tx }
@@ -106,14 +112,18 @@ struct HomeView: View {
                                         Label("Edit", systemImage: "pencil")
                                     }
                                     Button(role: .destructive) {
-                                        store.deleteTransaction(id: tx.id)
+                                        withAnimation(AppAnimations.listSpring) {
+                                            store.deleteTransaction(id: tx.id)
+                                        }
                                     } label: {
                                         Label("Delete", systemImage: "trash")
                                     }
                                 }
-                                .appearOnLoad(delay: AppAnimations.staggerDelay * 6 + Double(index) * 0.04)
+                                .staggeredAppear(index: index, baseDelay: AppAnimations.staggerDelay * 5)
+                                .transition(AppAnimations.listInsert)
                             }
                         }
+                        .animatedListBoundary(value: store.transactions.count)
                     }
                 }
                 .padding(.horizontal, 24)
@@ -125,10 +135,12 @@ struct HomeView: View {
             .sheet(isPresented: $showAddIncome) {
                 AddIncomeView()
             }
+            .animation(AppAnimations.sheetSpring, value: showAddIncome)
             .sheet(item: $transactionToEdit) { tx in
                 EditTransactionView(transaction: tx)
                     .environmentObject(store)
             }
+            .animation(AppAnimations.sheetSpring, value: transactionToEdit?.id)
             .navigationDestination(isPresented: $showWeekly) {
                 WeeklyInsightsView()
             }

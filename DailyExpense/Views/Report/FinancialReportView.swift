@@ -30,11 +30,13 @@ struct FinancialReportView: View {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 12) {
                     Group {
-                        Text("Financial Report")
-                            .font(.appTitle())
-                            .foregroundStyle(AppTheme.textPrimary)
+                    Text("Financial Report")
+                        .font(.appTitle())
+                        .foregroundStyle(AppTheme.textPrimary)
+                        .appearOnLoad(delay: 0)
 
-                        periodPicker
+                    periodPicker
+                        .appearOnLoad(delay: AppAnimations.staggerDelay)
 
                         quickStatsRow
                             .animation(AppAnimations.cardSpring, value: period)
@@ -98,9 +100,11 @@ struct FinancialReportView: View {
                                 .stroke(Color(red: 0.9, green: 0.91, blue: 0.92), lineWidth: period == p ? 0 : 1)
                         )
                 }
-                .buttonStyle(.plain)
+                .scalePressStyle()
+                .animation(AppAnimations.tabEase, value: period)
             }
         }
+        .animation(AppAnimations.tabEase, value: period)
     }
 
     // MARK: - Quick stats (fills blank after time tabs)
@@ -109,7 +113,7 @@ struct FinancialReportView: View {
         HStack(spacing: 0) {
             statCell(value: "\(transactionCount)", label: "Transactions")
             Divider().frame(height: 32)
-            statCell(value: MoneyFormat.string(averageDailySpend, symbol: store.settings.currencySymbol), label: "Avg / day")
+            statCell(value: store.settings.formatMoney(averageDailySpend), label: "Avg / day")
             Divider().frame(height: 32)
             statCell(value: "\(savingsPercent)%", label: "Saved")
         }
@@ -160,10 +164,10 @@ struct FinancialReportView: View {
             Text("Net Balance (\(period.rawValue))")
                 .font(.appCaption())
                 .foregroundStyle(.white.opacity(0.85))
-            Text(MoneyFormat.string(incomeTotal - expenseTotal, symbol: store.settings.currencySymbol, signed: true))
+            Text(store.settings.formatMoney(incomeTotal - expenseTotal, signed: true))
                 .font(.system(size: 34, weight: .bold))
                 .foregroundStyle(.white)
-            Text("Income \(MoneyFormat.string(incomeTotal, symbol: store.settings.currencySymbol))  −  Expenses \(MoneyFormat.string(expenseTotal, symbol: store.settings.currencySymbol))")
+            Text("Income \(store.settings.formatMoney(incomeTotal))  −  Expenses \(store.settings.formatMoney(expenseTotal))")
                 .font(.appSmall())
                 .foregroundStyle(.white.opacity(0.8))
         }
@@ -186,7 +190,7 @@ struct FinancialReportView: View {
             Text(title)
                 .font(.appCaption())
                 .foregroundStyle(color)
-            Text(MoneyFormat.string(amount, symbol: store.settings.currencySymbol))
+            Text(store.settings.formatMoney(amount))
                 .font(.system(size: 22, weight: .bold))
                 .foregroundStyle(color)
         }
@@ -291,7 +295,7 @@ struct FinancialReportView: View {
                 .font(.appBody())
                 .foregroundStyle(AppTheme.textPrimary)
             Spacer()
-            Text(MoneyFormat.string(amount, symbol: store.settings.currencySymbol))
+            Text(store.settings.formatMoney(amount))
                 .font(.appBody())
                 .fontWeight(.bold)
                 .foregroundStyle(color)
@@ -331,7 +335,7 @@ struct FinancialReportView: View {
             return "You saved \(pct)% of income — great job!"
         }
         if expenseTotal > incomeTotal {
-            return "Spending exceeded income by \(MoneyFormat.string(expenseTotal - incomeTotal, symbol: store.settings.currencySymbol))"
+            return "Spending exceeded income by \(store.settings.formatMoney(expenseTotal - incomeTotal))"
         }
         return "Track daily to improve your savings rate"
     }
@@ -351,7 +355,7 @@ struct FinancialReportView: View {
                         Text(week.label)
                             .font(.appCaption())
                         Spacer()
-                        Text(MoneyFormat.string(week.net, symbol: store.settings.currencySymbol, signed: true))
+                        Text(store.settings.formatMoney(week.net, signed: true))
                             .font(.appCaption())
                             .fontWeight(.semibold)
                             .foregroundStyle(week.net >= 0 ? AppTheme.income : AppTheme.expense)

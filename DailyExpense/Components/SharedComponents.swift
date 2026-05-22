@@ -6,6 +6,7 @@ struct SummaryCard: View {
     let income: Decimal
     let expenses: Decimal
     let currencySymbol: String
+    var currencyLocaleIdentifier: String = "en_US"
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -17,7 +18,7 @@ struct SummaryCard: View {
                 .font(.appSmall())
                 .foregroundStyle(.white.opacity(0.7))
 
-            Text(MoneyFormat.string(netBalance, symbol: currencySymbol, signed: true))
+            Text(MoneyFormat.string(netBalance, symbol: currencySymbol, localeIdentifier: currencyLocaleIdentifier, signed: true))
                 .font(.system(size: 34, weight: .bold))
                 .foregroundStyle(.white)
 
@@ -26,7 +27,7 @@ struct SummaryCard: View {
                     Text("Income")
                         .font(.appSmall())
                         .foregroundStyle(.white.opacity(0.7))
-                    Text(MoneyFormat.string(income, symbol: currencySymbol))
+                    Text(MoneyFormat.string(income, symbol: currencySymbol, localeIdentifier: currencyLocaleIdentifier))
                         .font(.system(size: 15, weight: .bold))
                         .foregroundStyle(AppTheme.primaryLight)
                 }
@@ -40,7 +41,7 @@ struct SummaryCard: View {
                     Text("Expenses")
                         .font(.appSmall())
                         .foregroundStyle(.white.opacity(0.7))
-                    Text(MoneyFormat.string(expenses, symbol: currencySymbol))
+                    Text(MoneyFormat.string(expenses, symbol: currencySymbol, localeIdentifier: currencyLocaleIdentifier))
                         .font(.system(size: 15, weight: .bold))
                         .foregroundStyle(Color(red: 1, green: 0.85, blue: 0.85))
                 }
@@ -99,16 +100,9 @@ struct QuickActionButton: View {
     let emoji: String
     let title: String
     let action: () -> Void
-    @State private var pressed = false
 
     var body: some View {
-        Button {
-            withAnimation(AppAnimations.tagSpring) { pressed = true }
-            action()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                withAnimation(AppAnimations.tagSpring) { pressed = false }
-            }
-        } label: {
+        Button(action: action) {
             VStack(spacing: 8) {
                 Text(emoji)
                     .font(.system(size: 22))
@@ -121,8 +115,7 @@ struct QuickActionButton: View {
             .background(.white, in: RoundedRectangle(cornerRadius: 14))
             .shadow(color: .black.opacity(0.05), radius: 6, y: 2)
         }
-        .buttonStyle(.plain)
-        .scaleEffect(pressed ? 0.94 : 1)
+        .scalePressStyle()
     }
 }
 
@@ -132,6 +125,7 @@ struct TransactionRow: View {
     let subtitle: String
     let amount: Decimal
     let currencySymbol: String
+    var currencyLocaleIdentifier: String = "en_US"
     let isIncome: Bool
 
     var body: some View {
@@ -152,7 +146,11 @@ struct TransactionRow: View {
 
             Spacer()
 
-            Text(isIncome ? MoneyFormat.string(amount, symbol: currencySymbol, signed: true) : "-\(MoneyFormat.string(amount, symbol: currencySymbol))")
+            Text(
+                isIncome
+                    ? MoneyFormat.string(amount, symbol: currencySymbol, localeIdentifier: currencyLocaleIdentifier, signed: true)
+                    : "-\(MoneyFormat.string(amount, symbol: currencySymbol, localeIdentifier: currencyLocaleIdentifier))"
+            )
                 .font(.system(size: 15, weight: .bold))
                 .foregroundStyle(isIncome ? AppTheme.income : AppTheme.expense)
         }
@@ -189,7 +187,8 @@ struct TagChip: View {
             )
         }
         .buttonStyle(.plain)
-        .animation(.spring(response: 0.3, dampingFraction: 0.65), value: isSelected)
+        .scalePressStyle()
+        .animation(AppAnimations.tagSpring, value: isSelected)
     }
 }
 
@@ -197,16 +196,9 @@ struct PrimaryButton: View {
     let title: String
     var gradient: LinearGradient = AppTheme.incomeGradient
     let action: () -> Void
-    @State private var pressed = false
 
     var body: some View {
-        Button {
-            withAnimation(AppAnimations.tagSpring) { pressed = true }
-            action()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
-                withAnimation(AppAnimations.tagSpring) { pressed = false }
-            }
-        } label: {
+        Button(action: action) {
             Text(title)
                 .font(.appSubheadline())
                 .foregroundStyle(.white)
@@ -215,8 +207,7 @@ struct PrimaryButton: View {
                 .background(gradient, in: RoundedRectangle(cornerRadius: 16))
                 .shadow(color: AppTheme.primary.opacity(0.3), radius: 12, y: 6)
         }
-        .buttonStyle(.plain)
-        .scaleEffect(pressed ? 0.97 : 1)
+        .scalePressStyle()
         .accessibilityLabel(title)
         .accessibilityAddTraits(.isButton)
     }

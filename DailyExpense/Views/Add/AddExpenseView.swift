@@ -9,12 +9,14 @@ struct AddExpenseView: View {
     @State private var note = ""
     @State private var date = Date()
     @State private var entryType: TransactionType = .expense
+    @State private var saveFlash = false
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     entryTypeToggle
+                        .appearOnLoad(delay: 0)
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Amount")
@@ -33,19 +35,23 @@ struct AddExpenseView: View {
                             .frame(height: 3)
                             .cornerRadius(2)
                     }
+                    .appearOnLoad(delay: AppAnimations.staggerDelay)
+                    .bounceOnChange(value: store.settings.currencyCode)
 
                     Text("Category")
                         .font(.appSubheadline())
 
                     FlowTagLayout(spacing: 10) {
-                        ForEach(store.tags(for: entryType)) { tag in
+                        ForEach(Array(store.tags(for: entryType).enumerated()), id: \.element.id) { index, tag in
                             TagChip(tag: tag, isSelected: selectedTag?.id == tag.id) {
-                                withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                                withAnimation(AppAnimations.tagSpring) {
                                     selectedTag = tag
                                 }
                             }
+                            .staggeredAppear(index: index, baseDelay: AppAnimations.staggerDelay * 2)
                         }
                     }
+                    .animation(AppAnimations.listSpring, value: entryType)
 
                     TextField("Add a note (optional)", text: $note)
                         .padding()
@@ -54,6 +60,7 @@ struct AddExpenseView: View {
                     DatePicker("Date", selection: $date, displayedComponents: [.date])
                         .padding()
                         .background(.white, in: RoundedRectangle(cornerRadius: 14))
+                        .appearOnLoad(delay: AppAnimations.staggerDelay * 4)
                 }
                 .padding(24)
             }
@@ -69,15 +76,19 @@ struct AddExpenseView: View {
                 PrimaryButton(title: "Save Expense", gradient: AppTheme.summaryGradient) {
                     save()
                 }
+                .saveSuccessFlash(active: $saveFlash)
                 .padding()
                 .disabled(!canSave)
                 .opacity(canSave ? 1 : 0.5)
+                .animation(AppAnimations.tabEase, value: canSave)
             }
             .onAppear {
                 selectedTag = store.tags(for: .expense).first
             }
             .onChange(of: entryType) { newType in
-                selectedTag = store.tags(for: newType).first
+                withAnimation(AppAnimations.tabEase) {
+                    selectedTag = store.tags(for: newType).first
+                }
             }
         }
     }
@@ -93,7 +104,9 @@ struct AddExpenseView: View {
 
     private func typeButton(_ title: String, type: TransactionType) -> some View {
         Button {
-            entryType = type
+            withAnimation(AppAnimations.tabEase) {
+                entryType = type
+            }
         } label: {
             Text(title)
                 .font(.appCaption())
@@ -103,7 +116,8 @@ struct AddExpenseView: View {
                 .padding(.vertical, 10)
                 .background(entryType == type ? (type == .income ? AppTheme.income : AppTheme.primary) : .clear, in: RoundedRectangle(cornerRadius: 8))
         }
-        .buttonStyle(.plain)
+        .scalePressStyle()
+        .animation(AppAnimations.tabEase, value: entryType)
     }
 
     private var canSave: Bool {
@@ -120,6 +134,9 @@ struct AddExpenseView: View {
             date: date,
             type: entryType
         ) else { return }
-        dismiss()
+        withAnimation(AppAnimations.popSpring) { saveFlash = true }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) {
+            dismiss()
+        }
     }
 }

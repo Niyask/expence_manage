@@ -46,6 +46,7 @@ struct OnboardingView: View {
             }
             .tabViewStyle(.page(indexDisplayMode: .always))
             .indexViewStyle(.page(backgroundDisplayMode: .always))
+            .animation(AppAnimations.tabEase, value: page)
 
             VStack(spacing: 12) {
                 if page == pages.count - 1 {
@@ -65,8 +66,9 @@ struct OnboardingView: View {
                 HStack(spacing: 12) {
                     if page > 0 {
                         Button("Back") {
-                            withAnimation(AppAnimations.tabEase) { page -= 1 }
+                            withAnimation(AppAnimations.cardSpring) { page -= 1 }
                         }
+                        .scalePressStyle()
                         .font(.appBody())
                         .foregroundStyle(AppTheme.textSecondary)
                         .frame(maxWidth: .infinity)
@@ -77,7 +79,7 @@ struct OnboardingView: View {
                         gradient: pages[page].gradient
                     ) {
                         if page < pages.count - 1 {
-                            withAnimation(AppAnimations.tabEase) { page += 1 }
+                            withAnimation(AppAnimations.cardSpring) { page += 1 }
                         } else {
                             finish()
                         }
@@ -107,6 +109,7 @@ struct OnboardingView: View {
                 .frame(width: 120, height: 120)
                 .background(item.gradient, in: Circle())
                 .shadow(color: AppTheme.primary.opacity(0.25), radius: 16, y: 8)
+                .bounceOnChange(value: page)
 
             Text(item.title)
                 .font(.appTitle())
@@ -143,7 +146,9 @@ struct OnboardingView: View {
     }
 
     private func finish() {
-        store.completeOnboarding(displayName: displayName)
+        withAnimation(AppAnimations.cardSpring) {
+            store.completeOnboarding(displayName: displayName)
+        }
         Task {
             if store.settings.notificationsEnabled {
                 _ = await store.requestNotificationPermission()

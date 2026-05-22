@@ -11,24 +11,30 @@ struct SettingsView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    Text("Settings")
-                        .font(.appTitle())
-                        .appearOnLoad()
+                    Group {
+                        Text("Settings")
+                            .font(.appTitle())
+                            .appearOnLoad()
 
-                    profileCard
-                    eveningReportCard
-                    weeklyInsightsCard
-                    settingsGroup("Preferences", rows: preferenceRows)
-                    settingsGroup("Tags", rows: tagRows)
-                    settingsGroup("Data", rows: dataRows)
-                    dataRetentionCard
-                    securityNote
+                        profileCard
+                        eveningReportCard
+                        weeklyInsightsCard
+                        currencyCard
+                    }
 
-                    Text("Daily Expense v1.0 · iOS 16+")
-                        .font(.appSmall())
-                        .foregroundStyle(AppTheme.textSecondary)
-                        .frame(maxWidth: .infinity)
-                        .padding(.top, 8)
+                    Group {
+                        settingsGroup("Preferences", rows: preferenceRows)
+                        settingsGroup("Tags", rows: tagRows)
+                        settingsGroup("Data", rows: dataRows)
+                        dataRetentionCard
+                        securityNote
+
+                        Text("Daily Expense v1.0 · iOS 16+")
+                            .font(.appSmall())
+                            .foregroundStyle(AppTheme.textSecondary)
+                            .frame(maxWidth: .infinity)
+                            .padding(.top, 8)
+                    }
                 }
                 .padding(24)
                 .padding(.bottom, 100)
@@ -62,6 +68,7 @@ struct SettingsView: View {
         .padding(16)
         .background(.white, in: RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.04), radius: 6, y: 2)
+        .appearOnLoad(delay: 0)
     }
 
     private var eveningReportCard: some View {
@@ -132,14 +139,39 @@ struct SettingsView: View {
             Spacer()
             Toggle("", isOn: $store.settings.weeklyInsightsEnabled)
                 .labelsHidden()
+                .animation(AppAnimations.tabEase, value: store.settings.weeklyInsightsEnabled)
         }
         .padding(16)
         .background(.white, in: RoundedRectangle(cornerRadius: 16))
+        .appearOnLoad(delay: AppAnimations.staggerDelay)
+    }
+
+    private var currencyCard: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Currency")
+                .font(.appCaption())
+                .foregroundStyle(AppTheme.textSecondary)
+            Picker("Currency", selection: $store.settings.currencyCode) {
+                ForEach(AppCurrency.all) { currency in
+                    Text("\(currency.flag) \(currency.name) · \(currency.settingsLabel)")
+                        .tag(currency.code)
+                }
+            }
+            .pickerStyle(.menu)
+            .tint(AppTheme.primary)
+            .padding()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(.white, in: RoundedRectangle(cornerRadius: 14))
+        }
+        .padding(16)
+        .background(.white, in: RoundedRectangle(cornerRadius: 16))
+        .shadow(color: .black.opacity(0.04), radius: 6, y: 2)
+        .bounceOnChange(value: store.settings.currencyCode)
+        .appearOnLoad(delay: AppAnimations.staggerDelay * 2)
     }
 
     private var preferenceRows: [SettingsRow] {
         [
-            SettingsRow(icon: "💰", title: "Currency", value: "INR (₹)"),
             SettingsRow(
                 icon: "🔔",
                 title: "Bedtime notifications",

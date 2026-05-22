@@ -40,7 +40,7 @@ struct WeeklyInsightsView: View {
                     label: weekLabel(weeksAgo: offset),
                     isSelected: selectedWeekOffset == offset
                 ) {
-                    withAnimation(AppAnimations.tabEase) {
+                    withAnimation(AppAnimations.cardSpring) {
                         selectedWeekOffset = offset
                     }
                 }
@@ -70,7 +70,7 @@ struct WeeklyInsightsView: View {
                     .font(.system(size: 26, weight: .bold))
                     .foregroundStyle(AppTheme.textPrimary)
 
-                Text("\(MoneyFormat.string(top.amount, symbol: store.settings.currencySymbol)) · \(Int(top.percentage))% of weekly expenses")
+                Text("\(store.settings.formatMoney(top.amount)) · \(Int(top.percentage))% of weekly expenses")
                     .font(.appCaption())
                     .foregroundStyle(AppTheme.textSecondary)
             }
@@ -106,7 +106,7 @@ struct WeeklyInsightsView: View {
                 ForEach(breakdown) { item in
                     CategoryBarRow(
                         name: item.tag.name,
-                        amount: MoneyFormat.string(item.amount, symbol: store.settings.currencySymbol),
+                        amount: store.settings.formatMoney(item.amount),
                         color: item.tag.color,
                         progress: item.percentage / 100
                     )

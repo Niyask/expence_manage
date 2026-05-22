@@ -7,6 +7,7 @@ struct AddIncomeView: View {
     @State private var amountText = ""
     @State private var selectedTag: ExpenseTag?
     @State private var note = ""
+    @State private var saveFlash = false
 
     var body: some View {
         NavigationStack {
@@ -30,17 +31,20 @@ struct AddIncomeView: View {
                             .frame(height: 3)
                             .cornerRadius(2)
                     }
+                    .appearOnLoad(delay: 0)
+                    .bounceOnChange(value: store.settings.currencyCode)
 
                     Text("Income Source")
                         .font(.appSubheadline())
 
                     FlowTagLayout(spacing: 10) {
-                        ForEach(store.tags(for: .income)) { tag in
+                        ForEach(Array(store.tags(for: .income).enumerated()), id: \.element.id) { index, tag in
                             TagChip(tag: tag, isSelected: selectedTag?.id == tag.id) {
-                                withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                                withAnimation(AppAnimations.tagSpring) {
                                     selectedTag = tag
                                 }
                             }
+                            .staggeredAppear(index: index, baseDelay: AppAnimations.staggerDelay)
                         }
                     }
 
@@ -60,9 +64,11 @@ struct AddIncomeView: View {
             }
             .safeAreaInset(edge: .bottom) {
                 PrimaryButton(title: "Add Income") { save() }
+                    .saveSuccessFlash(active: $saveFlash)
                     .padding()
                     .disabled(!canSave)
                     .opacity(canSave ? 1 : 0.5)
+                    .animation(AppAnimations.tabEase, value: canSave)
             }
             .onAppear {
                 selectedTag = store.tags(for: .income).first(where: { $0.name == "Salary" }) ?? store.tags(for: .income).first
@@ -84,6 +90,9 @@ struct AddIncomeView: View {
             date: Date(),
             type: .income
         ) else { return }
-        dismiss()
+        withAnimation(AppAnimations.popSpring) { saveFlash = true }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) {
+            dismiss()
+        }
     }
 }

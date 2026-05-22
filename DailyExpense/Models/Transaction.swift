@@ -57,7 +57,15 @@ struct AppSettings: Codable, Equatable {
     var weeklyInsightsEnabled: Bool = true
     var notificationsEnabled: Bool = true
     var hasCompletedOnboarding: Bool = false
-    var currencySymbol: String = "₹"
+    var currencyCode: String = AppCurrency.default.code
+
+    var currency: AppCurrency {
+        AppCurrency.with(code: currencyCode) ?? .default
+    }
+
+    var currencySymbol: String { currency.symbol }
+
+    var currencyLocaleIdentifier: String { currency.localeIdentifier }
 
     var greetingName: String {
         let trimmed = displayName.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -66,6 +74,62 @@ struct AppSettings: Codable, Equatable {
 
     var bedtimeTimeLabel: String {
         MoneyFormat.reportTime(hour: eveningReportHour, minute: eveningReportMinute)
+    }
+
+    func formatMoney(_ amount: Decimal, signed: Bool = false) -> String {
+        MoneyFormat.string(
+            amount,
+            symbol: currencySymbol,
+            localeIdentifier: currencyLocaleIdentifier,
+            signed: signed
+        )
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case displayName
+        case eveningReportHour
+        case eveningReportMinute
+        case hasConfiguredBedtime
+        case weeklyInsightsEnabled
+        case notificationsEnabled
+        case hasCompletedOnboarding
+        case currencyCode
+        case currencySymbol
+    }
+
+    init() {}
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        displayName = try c.decodeIfPresent(String.self, forKey: .displayName) ?? ""
+        eveningReportHour = try c.decodeIfPresent(Int.self, forKey: .eveningReportHour) ?? 20
+        eveningReportMinute = try c.decodeIfPresent(Int.self, forKey: .eveningReportMinute) ?? 0
+        hasConfiguredBedtime = try c.decodeIfPresent(Bool.self, forKey: .hasConfiguredBedtime) ?? false
+        weeklyInsightsEnabled = try c.decodeIfPresent(Bool.self, forKey: .weeklyInsightsEnabled) ?? true
+        notificationsEnabled = try c.decodeIfPresent(Bool.self, forKey: .notificationsEnabled) ?? true
+        hasCompletedOnboarding = try c.decodeIfPresent(Bool.self, forKey: .hasCompletedOnboarding) ?? false
+
+        if let code = try c.decodeIfPresent(String.self, forKey: .currencyCode),
+           AppCurrency.with(code: code) != nil {
+            currencyCode = code.uppercased()
+        } else if let legacySymbol = try c.decodeIfPresent(String.self, forKey: .currencySymbol),
+                  let code = AppCurrency.code(matchingSymbol: legacySymbol) {
+            currencyCode = code
+        } else {
+            currencyCode = AppCurrency.default.code
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(displayName, forKey: .displayName)
+        try c.encode(eveningReportHour, forKey: .eveningReportHour)
+        try c.encode(eveningReportMinute, forKey: .eveningReportMinute)
+        try c.encode(hasConfiguredBedtime, forKey: .hasConfiguredBedtime)
+        try c.encode(weeklyInsightsEnabled, forKey: .weeklyInsightsEnabled)
+        try c.encode(notificationsEnabled, forKey: .notificationsEnabled)
+        try c.encode(hasCompletedOnboarding, forKey: .hasCompletedOnboarding)
+        try c.encode(currencyCode, forKey: .currencyCode)
     }
 }
 

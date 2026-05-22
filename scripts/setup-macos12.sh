@@ -11,12 +11,22 @@ if [[ ! -d "$XCODE_APP" ]]; then
 fi
 
 export DEVELOPER_DIR="$XCODE_APP/Contents/Developer"
+
+echo "→ Setting active developer directory (requires password)…"
 sudo xcode-select -s "$DEVELOPER_DIR"
 
+echo ""
 echo "Active developer directory:"
 xcode-select -p
 xcodebuild -version
 
+if xcrun simctl help &>/dev/null; then
+  echo "✓ simctl is available"
+else
+  echo "✗ simctl still missing — restart Terminal and try again"
+fi
+
 echo ""
-echo "Next: open the project and run in Simulator (⌘R), or connect iPhone and run."
-echo "  open $(cd "$(dirname "$0")/.." && pwd)/DailyExpense.xcodeproj"
+echo "Run the app in Simulator:"
+echo "  cd $(cd "$(dirname "$0")/.." && pwd)"
+echo "  ./scripts/run-simulator.sh"

@@ -7,10 +7,13 @@ struct RootView: View {
         Group {
             if store.settings.hasCompletedOnboarding {
                 MainTabView()
+                    .transition(AppAnimations.screenSwap)
             } else {
                 OnboardingView()
+                    .transition(AppAnimations.screenSwap)
             }
         }
+        .animation(AppAnimations.cardSpring, value: store.settings.hasCompletedOnboarding)
         .sheet(
             isPresented: Binding(
                 get: { store.pendingEveningReportDate != nil },

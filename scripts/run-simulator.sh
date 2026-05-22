@@ -9,17 +9,52 @@ PROJECT="DailyExpense.xcodeproj"
 SCHEME="DailyExpense"
 BUNDLE_ID="com.dailyexpense.app"
 
-if [[ ! -d "$PROJECT" ]]; then
-  echo "→ Generating Xcode project with XcodeGen…"
-  if ! command -v xcodegen &>/dev/null; then
-    echo "Install: brew install xcodegen"
+# Use full Xcode (simctl lives here — Command Line Tools alone are not enough)
+resolve_xcode() {
+  if [[ -d "/Applications/Xcode.app/Contents/Developer" ]]; then
+    export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer"
+  elif [[ -d "$HOME/Downloads/Xcode.app/Contents/Developer" ]]; then
+    export DEVELOPER_DIR="$HOME/Downloads/Xcode.app/Contents/Developer"
+  else
+    echo "Xcode not found."
+    echo "  Install Xcode, or keep Xcode.app in ~/Downloads (macOS 12)."
+    echo "  Then run once:  ./scripts/setup-macos12.sh"
     exit 1
   fi
-  xcodegen generate
+  export PATH="$DEVELOPER_DIR/usr/bin:$PATH"
+}
+
+resolve_xcode
+
+if ! xcrun simctl help &>/dev/null; then
+  echo "simctl is not available. Active developer path:"
+  xcode-select -p 2>&1 || true
+  echo ""
+  echo "Fix (one time, needs password):"
+  echo "  ./scripts/setup-macos12.sh"
+  echo "Or:"
+  echo "  sudo xcode-select -s \"$DEVELOPER_DIR\""
+  exit 1
+fi
+
+echo "→ Using $(xcodebuild -version | head -1) from $DEVELOPER_DIR"
+
+if [[ ! -d "$PROJECT" ]]; then
+  echo "→ Generating Xcode project with XcodeGen…"
+  if command -v xcodegen &>/dev/null; then
+    xcodegen generate
+  else
+    TMP=$(mktemp -d)
+    curl -fsSL "https://github.com/yonaskolb/XcodeGen/releases/download/2.42.0/xcodegen.zip" -o "$TMP/xcodegen.zip"
+    unzip -q "$TMP/xcodegen.zip" -d "$TMP"
+    "$TMP/xcodegen/bin/xcodegen" generate
+  fi
 fi
 
 echo "→ Booting default iPhone simulator…"
-DEVICE_UDID="$(xcrun simctl list devices available -j | python3 -c "
+DEVICE_UDID=""
+if DEVICE_JSON="$(xcrun simctl list devices available -j 2>/dev/null)"; then
+  DEVICE_UDID="$(printf '%s' "$DEVICE_JSON" | python3 -c "
 import json, sys
 data = json.load(sys.stdin)
 for runtime, devices in data.get('devices', {}).items():
@@ -29,7 +64,8 @@ for runtime, devices in data.get('devices', {}).items():
         if d.get('isAvailable') and 'iPhone' in d.get('name', ''):
             print(d['udid'])
             sys.exit(0)
-")"
+" 2>/dev/null || true)"
+fi
 
 if [[ -z "${DEVICE_UDID:-}" ]]; then
   echo "No iPhone simulator found. Open Xcode → Settings → Platforms and install an iOS simulator."
@@ -48,9 +84,10 @@ xcodebuild \
   build \
   CODE_SIGNING_ALLOWED=NO
 
-APP_PATH="$(find ~/Library/Developer/Xcode/DerivedData -path "*Build/Products/Debug-iphonesimulator/DailyExpense.app" 2>/dev/null | head -1)"
-if [[ -z "$APP_PATH" || ! -d "$APP_PATH" ]]; then
-  APP_PATH="$(xcodebuild -project "$PROJECT" -scheme "$SCHEME" -destination "id=$DEVICE_UDID" -showBuildSettings 2>/dev/null | awk -F' = ' '/TARGET_BUILD_DIR/ {dir=$2} /FULL_PRODUCT_NAME/ {name=$2} END {print dir"/"name}')"
+APP_PATH="$(find ~/Library/Developer/Xcode/DerivedData -path "*/Build/Products/Debug-iphonesimulator/DailyExpense.app" -print -quit 2>/dev/null)"
+if [[ -z "$APP_PATH" || ! -f "$APP_PATH/Info.plist" ]]; then
+  echo "Could not find built app at DerivedData."
+  exit 1
 fi
 
 echo "→ Installing & launching ($BUNDLE_ID)…"

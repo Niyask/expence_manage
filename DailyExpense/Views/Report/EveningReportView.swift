@@ -36,7 +36,7 @@ struct EveningReportView: View {
             Text("Reminder at \(store.settings.bedtimeTimeLabel)")
                 .font(.appSmall())
                 .foregroundStyle(.white.opacity(0.65))
-            Text(MoneyFormat.string(store.netBalance(on: date), symbol: store.settings.currencySymbol, signed: true))
+            Text(store.settings.formatMoney(store.netBalance(on: date), signed: true))
                 .font(.system(size: 32, weight: .bold))
                 .foregroundStyle(.white)
         }
@@ -62,7 +62,7 @@ struct EveningReportView: View {
             Text(title)
                 .font(.appSmall())
                 .foregroundStyle(AppTheme.textSecondary)
-            Text(MoneyFormat.string(value, symbol: store.settings.currencySymbol, signed: title.contains("Net")))
+            Text(store.settings.formatMoney(value, signed: title.contains("Net")))
                 .font(.system(size: 14, weight: .bold))
                 .foregroundStyle(color)
         }
@@ -98,6 +98,7 @@ struct EveningReportView: View {
                             subtitle: MoneyFormat.time(tx.date),
                             amount: tx.amount,
                             currencySymbol: store.settings.currencySymbol,
+                            currencyLocaleIdentifier: store.settings.currencyLocaleIdentifier,
                             isIncome: tx.type == .income
                         )
                         .padding(.horizontal, 24)

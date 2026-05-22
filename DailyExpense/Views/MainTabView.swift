@@ -24,14 +24,18 @@ struct MainTabView: View {
             .animation(AppAnimations.tabEase, value: selectedTab)
 
             FloatingAddButton {
-                showAddExpense = true
+                withAnimation(AppAnimations.sheetSpring) {
+                    showAddExpense = true
+                }
             }
             .padding(.trailing, 20)
             .padding(.bottom, 56)
         }
         .sheet(isPresented: $showAddExpense) {
             AddExpenseView()
+                .transition(AppAnimations.sheetPresent)
         }
+        .animation(AppAnimations.sheetSpring, value: showAddExpense)
     }
 }
 
@@ -50,7 +54,7 @@ struct FloatingAddButton: View {
                 .shadow(color: AppTheme.primary.opacity(0.35), radius: 12, y: 6)
                 .scaleEffect(scale)
         }
-        .buttonStyle(.plain)
+        .scalePressStyle()
         .frame(maxWidth: .infinity, alignment: .trailing)
         .accessibilityLabel("Add expense")
         .accessibilityHint("Opens the expense entry form")

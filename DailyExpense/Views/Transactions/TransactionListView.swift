@@ -69,10 +69,13 @@ struct TransactionListView: View {
             .listRowBackground(Color.clear)
         } else {
             Section {
-                ForEach(sortedTransactions) { tx in
+                ForEach(Array(sortedTransactions.enumerated()), id: \.element.id) { index, tx in
                     transactionRow(for: tx)
+                        .staggeredAppear(index: index)
+                        .transition(AppAnimations.listInsert)
                 }
             }
+            .animatedListBoundary(value: sortedTransactions.count)
         }
     }
 
@@ -85,6 +88,7 @@ struct TransactionListView: View {
                 subtitle: MoneyFormat.daySubtitle(tx.date),
                 amount: tx.amount,
                 currencySymbol: store.settings.currencySymbol,
+                currencyLocaleIdentifier: store.settings.currencyLocaleIdentifier,
                 isIncome: tx.type == .income
             )
             .contentShape(Rectangle())
@@ -119,7 +123,7 @@ struct TransactionListView: View {
                     Text("Total income")
                         .font(.appSmall())
                         .foregroundStyle(.white.opacity(0.7))
-                    Text(MoneyFormat.string(store.lifetimeIncome, symbol: store.settings.currencySymbol))
+                    Text(store.settings.formatMoney(store.lifetimeIncome))
                         .font(.system(size: 18, weight: .bold))
                         .foregroundStyle(AppTheme.primaryLight)
                 }
@@ -128,7 +132,7 @@ struct TransactionListView: View {
                     Text("Total expenses")
                         .font(.appSmall())
                         .foregroundStyle(.white.opacity(0.7))
-                    Text(MoneyFormat.string(store.lifetimeExpenses, symbol: store.settings.currencySymbol))
+                    Text(store.settings.formatMoney(store.lifetimeExpenses))
                         .font(.system(size: 18, weight: .bold))
                         .foregroundStyle(Color(red: 1, green: 0.85, blue: 0.85))
                 }
@@ -187,7 +191,7 @@ struct TransactionListView: View {
                             Text(month.title)
                                 .font(.appSubheadline())
                             Spacer()
-                            Text(MoneyFormat.string(month.net, symbol: store.settings.currencySymbol, signed: true))
+                            Text(store.settings.formatMoney(month.net, signed: true))
                                 .font(.appCaption())
                                 .fontWeight(.semibold)
                                 .foregroundStyle(month.net >= 0 ? AppTheme.income : AppTheme.expense)
@@ -204,10 +208,10 @@ struct TransactionListView: View {
                                 }
                                 Spacer()
                                 VStack(alignment: .trailing, spacing: 2) {
-                                    Text("+\(MoneyFormat.string(week.income, symbol: store.settings.currencySymbol))")
+                                    Text("+\(store.settings.formatMoney(week.income))")
                                         .font(.appSmall())
                                         .foregroundStyle(AppTheme.income)
-                                    Text("-\(MoneyFormat.string(week.expense, symbol: store.settings.currencySymbol))")
+                                    Text("-\(store.settings.formatMoney(week.expense))")
                                         .font(.appSmall())
                                         .foregroundStyle(AppTheme.expense)
                                 }

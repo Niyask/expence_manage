@@ -11,6 +11,7 @@ struct EditTransactionView: View {
     @State private var note: String
     @State private var date: Date
     @State private var entryType: TransactionType
+    @State private var saveFlash = false
 
     init(transaction: Transaction) {
         self.transaction = transaction
@@ -27,6 +28,7 @@ struct EditTransactionView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     entryTypeToggle
+                        .appearOnLoad(delay: 0)
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Amount")
@@ -49,14 +51,16 @@ struct EditTransactionView: View {
                         .font(.appSubheadline())
 
                     FlowTagLayout(spacing: 10) {
-                        ForEach(store.tags(for: entryType)) { tag in
+                        ForEach(Array(store.tags(for: entryType).enumerated()), id: \.element.id) { index, tag in
                             TagChip(tag: tag, isSelected: selectedTag?.id == tag.id) {
-                                withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                                withAnimation(AppAnimations.tagSpring) {
                                     selectedTag = tag
                                 }
                             }
+                            .staggeredAppear(index: index)
                         }
                     }
+                    .animation(AppAnimations.listSpring, value: entryType)
 
                     TextField("Note (optional)", text: $note)
                         .padding()
@@ -89,11 +93,15 @@ struct EditTransactionView: View {
                     ) {
                         save()
                     }
+                    .saveSuccessFlash(active: $saveFlash)
                     .disabled(!canSave)
                     .opacity(canSave ? 1 : 0.5)
+                    .animation(AppAnimations.tabEase, value: canSave)
 
                     Button(role: .destructive) {
-                        store.deleteTransaction(id: transaction.id)
+                        withAnimation(AppAnimations.listSpring) {
+                            store.deleteTransaction(id: transaction.id)
+                        }
                         dismiss()
                     } label: {
                         Text("Delete Transaction")
@@ -118,9 +126,11 @@ struct EditTransactionView: View {
 
     private func typeButton(_ title: String, type: TransactionType) -> some View {
         Button {
-            entryType = type
-            if selectedTag?.type != type {
-                selectedTag = store.tags(for: type).first
+            withAnimation(AppAnimations.tabEase) {
+                entryType = type
+                if selectedTag?.type != type {
+                    selectedTag = store.tags(for: type).first
+                }
             }
         } label: {
             Text(title)
@@ -131,7 +141,8 @@ struct EditTransactionView: View {
                 .padding(.vertical, 10)
                 .background(entryType == type ? (type == .income ? AppTheme.income : AppTheme.primary) : .clear, in: RoundedRectangle(cornerRadius: 8))
         }
-        .buttonStyle(.plain)
+        .scalePressStyle()
+        .animation(AppAnimations.tabEase, value: entryType)
     }
 
     private var canSave: Bool {
@@ -149,6 +160,9 @@ struct EditTransactionView: View {
             date: date,
             type: entryType
         ) else { return }
-        dismiss()
+        withAnimation(AppAnimations.popSpring) { saveFlash = true }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) {
+            dismiss()
+        }
     }
 }

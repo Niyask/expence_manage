@@ -1,13 +1,17 @@
 import Foundation
 
 enum MoneyFormat {
-    private static let decimalFormatter: NumberFormatter = {
+    private static var formatterCache: [String: NumberFormatter] = [:]
+
+    private static func decimalFormatter(localeIdentifier: String) -> NumberFormatter {
+        if let cached = formatterCache[localeIdentifier] { return cached }
         let f = NumberFormatter()
         f.numberStyle = .decimal
         f.maximumFractionDigits = 0
-        f.locale = Locale(identifier: "en_IN")
+        f.locale = Locale(identifier: localeIdentifier)
+        formatterCache[localeIdentifier] = f
         return f
-    }()
+    }
 
     private static let timeFormatter: DateFormatter = {
         let f = DateFormatter()
@@ -32,9 +36,15 @@ enum MoneyFormat {
         return decimalValue(part) / t
     }
 
-    static func string(_ amount: Decimal, symbol: String = "₹", signed: Bool = false) -> String {
+    static func string(
+        _ amount: Decimal,
+        symbol: String = "$",
+        localeIdentifier: String = "en_US",
+        signed: Bool = false
+    ) -> String {
         let value = decimalValue(amount)
-        let body = decimalFormatter.string(from: NSNumber(value: abs(value))) ?? "0"
+        let body = decimalFormatter(localeIdentifier: localeIdentifier)
+            .string(from: NSNumber(value: abs(value))) ?? "0"
         if signed {
             let prefix = value >= 0 ? "+" : "-"
             return "\(prefix)\(symbol)\(body)"
