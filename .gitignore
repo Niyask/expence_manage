@@ -40,6 +40,13 @@ Thumbs.db
 *.exe
 *.war
 
+# Firebase / local build
+.firebaserc
+GoogleService-Info.plist
+build/
+*.ipa
+*.xcarchive
+
 # Large media files
 *.mp4
 *.tiff

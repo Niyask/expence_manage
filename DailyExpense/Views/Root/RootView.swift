@@ -4,13 +4,15 @@ struct RootView: View {
     @EnvironmentObject private var store: ExpenseStore
 
     var body: some View {
-        Group {
+        ZStack {
             if store.settings.hasCompletedOnboarding {
                 MainTabView()
                     .transition(AppAnimations.screenSwap)
+                    .zIndex(1)
             } else {
                 OnboardingView()
                     .transition(AppAnimations.screenSwap)
+                    .zIndex(0)
             }
         }
         .animation(AppAnimations.cardSpring, value: store.settings.hasCompletedOnboarding)

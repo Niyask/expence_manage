@@ -21,6 +21,13 @@ Built for **iOS 17+** with production-minded defaults: local persistence, notifi
 
 You **must use a Mac** with Xcode to build and run iOS apps. Windows can edit Swift files; the simulator runs only on macOS.
 
+### Install on your iPhone (Firebase link)
+
+**App Center is retired.** Use **Firebase App Distribution** + cloud build:
+
+1. Follow **[docs/FIREBASE_QUICKSTART.md](docs/FIREBASE_QUICKSTART.md)** (Firebase + Codemagic, tester: `niyaspulath@gmail.com`)
+2. You get an **email with an install link** on your phone
+
 ---
 
 ## Open in Xcode

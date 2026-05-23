@@ -33,9 +33,7 @@ struct MainTabView: View {
         }
         .sheet(isPresented: $showAddExpense) {
             AddExpenseView()
-                .transition(AppAnimations.sheetPresent)
         }
-        .animation(AppAnimations.sheetSpring, value: showAddExpense)
     }
 }
 

@@ -40,13 +40,12 @@ struct OnboardingView: View {
         VStack(spacing: 0) {
             TabView(selection: $page) {
                 ForEach(Array(pages.enumerated()), id: \.offset) { index, item in
-                    pageContent(item)
+                    pageContent(item, index: index)
                         .tag(index)
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .always))
             .indexViewStyle(.page(backgroundDisplayMode: .always))
-            .animation(AppAnimations.tabEase, value: page)
 
             VStack(spacing: 12) {
                 if page == pages.count - 1 {
@@ -61,6 +60,7 @@ struct OnboardingView: View {
                             .background(.white, in: RoundedRectangle(cornerRadius: 14))
                     }
                     .padding(.horizontal, 24)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
 
                 HStack(spacing: 12) {
@@ -89,33 +89,40 @@ struct OnboardingView: View {
                 .padding(.horizontal, 24)
 
                 if page < pages.count - 1 {
-                    Button("Skip") { finish() }
-                        .font(.appCaption())
-                        .foregroundStyle(AppTheme.textSecondary)
+                    Button("Skip") {
+                        withAnimation(AppAnimations.cardSpring) {
+                            finish()
+                        }
+                    }
+                    .scalePressStyle()
+                    .font(.appCaption())
+                    .foregroundStyle(AppTheme.textSecondary)
                 }
             }
             .padding(.bottom, 32)
             .padding(.top, 8)
+            .animation(AppAnimations.cardSpring, value: page)
         }
         .background(AppTheme.background)
     }
 
-    private func pageContent(_ item: OnboardingPage) -> some View {
+    private func pageContent(_ item: OnboardingPage, index: Int) -> some View {
         VStack(spacing: 24) {
             Spacer(minLength: 40)
 
-            Text(item.emoji)
-                .font(.system(size: 72))
-                .frame(width: 120, height: 120)
-                .background(item.gradient, in: Circle())
-                .shadow(color: AppTheme.primary.opacity(0.25), radius: 16, y: 8)
-                .bounceOnChange(value: page)
+            OnboardingPageSymbol(
+                emoji: item.emoji,
+                gradient: item.gradient,
+                pageIndex: index,
+                currentPage: page
+            )
 
             Text(item.title)
                 .font(.appTitle())
                 .foregroundStyle(AppTheme.textPrimary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 24)
+                .appearOnLoad(delay: AppAnimations.staggerDelay)
 
             Text(item.subtitle)
                 .font(.appBody())
@@ -123,13 +130,17 @@ struct OnboardingView: View {
                 .multilineTextAlignment(.center)
                 .lineSpacing(4)
                 .padding(.horizontal, 32)
+                .appearOnLoad(delay: AppAnimations.staggerDelay * 2)
 
-            retentionBadge
-                .opacity(page == 2 ? 1 : 0)
-                .padding(.horizontal, 24)
+            if index == 2 {
+                retentionBadge
+                    .padding(.horizontal, 24)
+                    .transition(.opacity.combined(with: .scale(scale: 0.95)))
+            }
 
             Spacer()
         }
+        .animation(AppAnimations.tabEase, value: page)
     }
 
     private var retentionBadge: some View {

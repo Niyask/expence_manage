@@ -84,8 +84,18 @@ xcodebuild \
   build \
   CODE_SIGNING_ALLOWED=NO
 
-APP_PATH="$(find ~/Library/Developer/Xcode/DerivedData -path "*/Build/Products/Debug-iphonesimulator/DailyExpense.app" -print -quit 2>/dev/null)"
-if [[ -z "$APP_PATH" || ! -f "$APP_PATH/Info.plist" ]]; then
+APP_PATH=""
+while IFS= read -r candidate; do
+  if [[ -f "$candidate/Info.plist" ]]; then
+    APP_PATH="$candidate"
+    break
+  fi
+done < <(find ~/Library/Developer/Xcode/DerivedData -path "*/Build/Products/Debug-iphonesimulator/DailyExpense.app" -print 2>/dev/null | grep -v "Index.noindex" || true)
+
+if [[ -z "$APP_PATH" ]]; then
+  APP_PATH="$HOME/Library/Developer/Xcode/DerivedData/DailyExpense-avdfcbydufzidndbvjjhkahemjlt/Build/Products/Debug-iphonesimulator/DailyExpense.app"
+fi
+if [[ ! -f "$APP_PATH/Info.plist" ]]; then
   echo "Could not find built app at DerivedData."
   exit 1
 fi

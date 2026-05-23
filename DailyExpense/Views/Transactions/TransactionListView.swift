@@ -87,7 +87,7 @@ struct TransactionListView: View {
                 title: tx.note.isEmpty ? tag.name : tx.note,
                 subtitle: MoneyFormat.daySubtitle(tx.date),
                 amount: tx.amount,
-                currencySymbol: store.settings.currencySymbol,
+                currencySymbol: store.settings.currencyAmountPrefix,
                 currencyLocaleIdentifier: store.settings.currencyLocaleIdentifier,
                 isIncome: tx.type == .income
             )

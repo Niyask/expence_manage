@@ -25,6 +25,7 @@ struct SettingsView: View {
                     Group {
                         settingsGroup("Preferences", rows: preferenceRows)
                         settingsGroup("Tags", rows: tagRows)
+                        replayOnboardingButton
                         settingsGroup("Data", rows: dataRows)
                         dataRetentionCard
                         securityNote
@@ -214,6 +215,34 @@ struct SettingsView: View {
             ),
             SettingsRow(icon: "➕", title: "Add Custom Tag", value: "Coming soon"),
         ]
+    }
+
+    private var replayOnboardingButton: some View {
+        Button {
+            withAnimation(AppAnimations.cardSpring) {
+                store.settings.hasCompletedOnboarding = false
+            }
+        } label: {
+            HStack(spacing: 12) {
+                Text("🎬")
+                    .font(.system(size: 18))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Replay onboarding")
+                        .font(.appBody())
+                        .foregroundStyle(AppTheme.textPrimary)
+                    Text("See the welcome tour again")
+                        .font(.appSmall())
+                        .foregroundStyle(AppTheme.textSecondary)
+                }
+                Spacer()
+                Text("›")
+                    .font(.system(size: 18))
+                    .foregroundStyle(Color(red: 0.8, green: 0.82, blue: 0.84))
+            }
+            .padding(16)
+            .background(.white, in: RoundedRectangle(cornerRadius: 16))
+        }
+        .scalePressStyle()
     }
 
     private var dataRows: [SettingsRow] {

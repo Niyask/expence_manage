@@ -65,6 +65,9 @@ struct AppSettings: Codable, Equatable {
 
     var currencySymbol: String { currency.symbol }
 
+    /// Prefix used in formatted amounts (`AED 100` for UAE, `$100` for USD).
+    var currencyAmountPrefix: String { currency.amountPrefix }
+
     var currencyLocaleIdentifier: String { currency.localeIdentifier }
 
     var greetingName: String {
@@ -79,7 +82,7 @@ struct AppSettings: Codable, Equatable {
     func formatMoney(_ amount: Decimal, signed: Bool = false) -> String {
         MoneyFormat.string(
             amount,
-            symbol: currencySymbol,
+            symbol: currencyAmountPrefix,
             localeIdentifier: currencyLocaleIdentifier,
             signed: signed
         )

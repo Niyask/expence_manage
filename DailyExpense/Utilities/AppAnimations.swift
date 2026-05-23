@@ -103,12 +103,58 @@ struct BounceOnChangeModifier<V: Equatable>: ViewModifier {
         content
             .scaleEffect(scale)
             .onChange(of: value) { _ in
-                guard !reduceMotion else { return }
-                scale = 1.06
-                withAnimation(AppAnimations.popSpring) {
-                    scale = 1
-                }
+                performBounce()
             }
+    }
+
+    private func performBounce() {
+        guard !reduceMotion else { return }
+        scale = 1.1
+        withAnimation(AppAnimations.popSpring) {
+            scale = 1
+        }
+    }
+}
+
+/// Bounces only when this onboarding page becomes active.
+struct OnboardingPageSymbol: View {
+    let emoji: String
+    let gradient: LinearGradient
+    let pageIndex: Int
+    let currentPage: Int
+
+    @State private var scale: CGFloat = 0.85
+    @State private var opacity: Double = 0
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var body: some View {
+        Text(emoji)
+            .font(.system(size: 72))
+            .frame(width: 120, height: 120)
+            .background(gradient, in: Circle())
+            .shadow(color: AppTheme.primary.opacity(0.25), radius: 16, y: 8)
+            .scaleEffect(scale)
+            .opacity(opacity)
+            .onAppear {
+                guard currentPage == pageIndex else { return }
+                revealSymbol(animated: !reduceMotion)
+            }
+            .onChange(of: currentPage) { newPage in
+                guard newPage == pageIndex else { return }
+                revealSymbol(animated: !reduceMotion)
+            }
+    }
+
+    private func revealSymbol(animated: Bool) {
+        if animated {
+            withAnimation(AppAnimations.popSpring) {
+                scale = 1
+                opacity = 1
+            }
+        } else {
+            scale = 1
+            opacity = 1
+        }
     }
 }
 

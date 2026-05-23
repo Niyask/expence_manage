@@ -9,7 +9,24 @@ struct AppCurrency: Identifiable, Hashable, Codable {
 
     var id: String { code }
 
-    var settingsLabel: String { "\(code) (\(symbol))" }
+    /// How amounts are prefixed in the UI (UAE e-commerce commonly uses `AED 99` in English).
+    var amountPrefix: String {
+        switch code {
+        case "AED":
+            return "AED "
+        default:
+            return symbol
+        }
+    }
+
+    var settingsLabel: String {
+        switch code {
+        case "AED":
+            return "AED · UAE Dirham"
+        default:
+            return "\(code) (\(symbol))"
+        }
+    }
 
     static let `default` = usd
 
@@ -29,7 +46,13 @@ struct AppCurrency: Identifiable, Hashable, Codable {
         AppCurrency(code: "JPY", symbol: "¥", name: "Japan", flag: "🇯🇵", localeIdentifier: "ja_JP"),
         AppCurrency(code: "AUD", symbol: "A$", name: "Australia", flag: "🇦🇺", localeIdentifier: "en_AU"),
         AppCurrency(code: "CAD", symbol: "C$", name: "Canada", flag: "🇨🇦", localeIdentifier: "en_CA"),
-        AppCurrency(code: "AED", symbol: "د.إ", name: "UAE", flag: "🇦🇪", localeIdentifier: "en_AE"),
+        AppCurrency(
+            code: "AED",
+            symbol: "AED",
+            name: "United Arab Emirates",
+            flag: "🇦🇪",
+            localeIdentifier: "en_AE"
+        ),
         AppCurrency(code: "SGD", symbol: "S$", name: "Singapore", flag: "🇸🇬", localeIdentifier: "en_SG"),
         AppCurrency(code: "CHF", symbol: "CHF", name: "Switzerland", flag: "🇨🇭", localeIdentifier: "de_CH"),
     ]
@@ -39,6 +62,14 @@ struct AppCurrency: Identifiable, Hashable, Codable {
     }
 
     static func code(matchingSymbol symbol: String) -> String? {
-        all.first { $0.symbol == symbol }?.code
+        if let match = all.first(where: { $0.symbol == symbol }) {
+            return match.code
+        }
+        switch symbol {
+        case "د.إ", "Dh", "Dhs", "AED", "AED ", "\u{20C3}", "⃃":
+            return "AED"
+        default:
+            return nil
+        }
     }
 }

@@ -21,7 +21,7 @@ struct HomeView: View {
                         netBalance: store.netBalance(on: today),
                         income: store.total(for: .income, on: today),
                         expenses: store.total(for: .expense, on: today),
-                        currencySymbol: store.settings.currencySymbol,
+                        currencySymbol: store.settings.currencyAmountPrefix,
                         currencyLocaleIdentifier: store.settings.currencyLocaleIdentifier
                     )
                     .appearOnLoad(delay: 0)
@@ -102,7 +102,7 @@ struct HomeView: View {
                                     title: tx.note.isEmpty ? tag.name : tx.note,
                                     subtitle: MoneyFormat.daySubtitle(tx.date),
                                     amount: tx.amount,
-                                    currencySymbol: store.settings.currencySymbol,
+                                    currencySymbol: store.settings.currencyAmountPrefix,
                                     currencyLocaleIdentifier: store.settings.currencyLocaleIdentifier,
                                     isIncome: tx.type == .income
                                 )
