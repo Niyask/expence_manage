@@ -41,8 +41,11 @@ final class ExpenseStore: ObservableObject {
 
     init() {
         loadPersistedState()
+        // Existing installs that already have transactions skip the welcome tour once.
         if !settings.hasCompletedOnboarding, !transactions.isEmpty {
-            settings.hasCompletedOnboarding = true
+            var next = settings
+            next.hasCompletedOnboarding = true
+            settings = next
         }
         pruneOldTransactions()
         scheduleNotifications()
@@ -50,10 +53,19 @@ final class ExpenseStore: ObservableObject {
 
     func completeOnboarding(displayName: String = "") {
         let trimmed = displayName.trimmingCharacters(in: .whitespacesAndNewlines)
+        var next = settings
         if !trimmed.isEmpty {
-            settings.displayName = trimmed
+            next.displayName = trimmed
         }
-        settings.hasCompletedOnboarding = true
+        next.hasCompletedOnboarding = true
+        settings = next
+    }
+
+    /// Show onboarding again (Settings → Replay onboarding).
+    func resetOnboarding() {
+        var next = settings
+        next.hasCompletedOnboarding = false
+        settings = next
     }
 
     func tag(for id: UUID) -> ExpenseTag? {

@@ -53,6 +53,8 @@ struct ScalePressButtonStyle: ButtonStyle {
 struct AppearOnLoad: ViewModifier {
     @State private var visible = false
     let delay: Double
+    /// When used inside a `TabView`, pass `page == index` so text appears when the page is shown.
+    var isActive: Bool = true
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     func body(content: Content) -> some View {
@@ -60,15 +62,21 @@ struct AppearOnLoad: ViewModifier {
             .opacity(visible ? 1 : 0)
             .offset(y: visible ? 0 : (reduceMotion ? 0 : 14))
             .scaleEffect(visible ? 1 : (reduceMotion ? 1 : 0.96))
-            .onAppear {
-                guard !reduceMotion else {
-                    visible = true
-                    return
-                }
-                withAnimation(AppAnimations.cardSpring.delay(delay)) {
-                    visible = true
-                }
+            .onAppear { revealIfNeeded() }
+            .onChange(of: isActive) { active in
+                if active { revealIfNeeded() }
             }
+    }
+
+    private func revealIfNeeded() {
+        guard isActive, !visible else { return }
+        if reduceMotion {
+            visible = true
+            return
+        }
+        withAnimation(AppAnimations.cardSpring.delay(delay)) {
+            visible = true
+        }
     }
 }
 
@@ -123,9 +131,19 @@ struct OnboardingPageSymbol: View {
     let pageIndex: Int
     let currentPage: Int
 
-    @State private var scale: CGFloat = 0.85
-    @State private var opacity: Double = 0
+    @State private var scale: CGFloat = 1
+    @State private var opacity: Double = 1
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    init(emoji: String, gradient: LinearGradient, pageIndex: Int, currentPage: Int) {
+        self.emoji = emoji
+        self.gradient = gradient
+        self.pageIndex = pageIndex
+        self.currentPage = currentPage
+        let active = currentPage == pageIndex
+        _scale = State(initialValue: active ? 1 : 0.85)
+        _opacity = State(initialValue: active ? 1 : 0)
+    }
 
     var body: some View {
         Text(emoji)
@@ -135,12 +153,8 @@ struct OnboardingPageSymbol: View {
             .shadow(color: AppTheme.primary.opacity(0.25), radius: 16, y: 8)
             .scaleEffect(scale)
             .opacity(opacity)
-            .onAppear {
+            .task(id: currentPage) {
                 guard currentPage == pageIndex else { return }
-                revealSymbol(animated: !reduceMotion)
-            }
-            .onChange(of: currentPage) { newPage in
-                guard newPage == pageIndex else { return }
                 revealSymbol(animated: !reduceMotion)
             }
     }
@@ -205,8 +219,8 @@ struct AnimatedProgressBar: View {
 }
 
 extension View {
-    func appearOnLoad(delay: Double = 0) -> some View {
-        modifier(AppearOnLoad(delay: delay))
+    func appearOnLoad(delay: Double = 0, isActive: Bool = true) -> some View {
+        modifier(AppearOnLoad(delay: delay, isActive: isActive))
     }
 
     func staggeredAppear(index: Int, baseDelay: Double = 0) -> some View {

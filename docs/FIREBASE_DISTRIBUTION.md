@@ -4,6 +4,9 @@ This lets you open a **link on your phone** and install **Daily Expense** (like 
 
 Your **MacBook Air 2015 cannot build** for **iPhone 17 / iOS 26**, so we use **Codemagic** (free cloud Mac) to build the `.ipa` and send it to **Firebase**.
 
+> **Connected Firebase on your phone already?** That only registers you as a tester.  
+> **To get a build:** follow **[START_FIREBASE_BUILD.md](START_FIREBASE_BUILD.md)** (Codemagic + 2 Firebase secrets).
+
 ---
 
 ## Part 1 — Firebase (15 minutes, one time)

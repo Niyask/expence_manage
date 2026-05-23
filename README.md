@@ -25,7 +25,8 @@ You **must use a Mac** with Xcode to build and run iOS apps. Windows can edit Sw
 
 **App Center is retired.** Use **Firebase App Distribution** + cloud build:
 
-1. Follow **[docs/FIREBASE_QUICKSTART.md](docs/FIREBASE_QUICKSTART.md)** (Firebase + Codemagic, tester: `niyaspulath@gmail.com`)
+1. **Phone connected to Firebase?** → **[docs/START_FIREBASE_BUILD.md](docs/START_FIREBASE_BUILD.md)** (start Codemagic build)  
+2. Full setup: **[docs/FIREBASE_QUICKSTART.md](docs/FIREBASE_QUICKSTART.md)** (tester: `niyaspulath@gmail.com`)
 2. You get an **email with an install link** on your phone
 
 ---
@@ -200,7 +201,8 @@ DailyExpense/
 | Build errors on Windows | Expected — open project on Mac in Xcode |
 | Notifications not firing | Enable toggle in app, then check **Settings → Notifications → Daily Expense** |
 | Empty Home after first install | Expected — add income or expense with + |
-| Onboarding shows again | `hasCompletedOnboarding` in `state.json`; complete onboarding once |
+| Onboarding does not show in Simulator | App data already saved — delete app on sim, or **Settings → Replay onboarding** |
+| Onboarding page looks blank | Fixed in build — swipe pages; if stuck, delete app and reinstall |
 | Old transactions missing | Only last **2 months** kept by design |
 | Strict concurrency warnings | In Xcode target, set **Swift Concurrency Checking** to `Minimal` if needed |
 
