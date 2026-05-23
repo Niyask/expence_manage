@@ -2,7 +2,7 @@
 # Setup: docs/FIREBASE_DISTRIBUTION.md
 workflows:
   daily-expense-firebase:
-    name: Daily Expense → Firebase
+    name: Daily Expense - Firebase
     max_build_duration: 90
     instance_type: mac_mini_m2
 
