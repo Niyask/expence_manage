@@ -25,8 +25,8 @@ You **must use a Mac** with Xcode to build and run iOS apps. Windows can edit Sw
 
 **App Center is retired.** Use **Firebase App Distribution** + cloud build:
 
-1. **Phone connected to Firebase?** → **[docs/START_FIREBASE_BUILD.md](docs/START_FIREBASE_BUILD.md)** (start Codemagic build)  
-2. Full setup: **[docs/FIREBASE_QUICKSTART.md](docs/FIREBASE_QUICKSTART.md)** (tester: `niyaspulath@gmail.com`)
+1. **Install on iPhone:** **[docs/BUILD_ON_YOUR_IPHONE.md](docs/BUILD_ON_YOUR_IPHONE.md)** (Codemagic + Firebase, step-by-step)  
+2. **[docs/DO_THIS_NOW.md](docs/DO_THIS_NOW.md)** | **[docs/FIREBASE_QUICKSTART.md](docs/FIREBASE_QUICKSTART.md)**
 2. You get an **email with an install link** on your phone
 
 ---

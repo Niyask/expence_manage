@@ -40,21 +40,13 @@ In Codemagic → your app → **Environment variables** → **Add**
 
 - Turn on **Secure** → Save
 
-### Variable 2 — get token on your Mac
+### Variable 2 — Firebase token
 
-Open **Terminal** and run:
-
-```bash
-npx firebase-tools@latest login:ci
-```
-
-- Browser opens → choose **niyaspulath@gmail.com**
-- Terminal shows a **long token** → copy all of it
-
-In Codemagic add:
 - **Name:** `FIREBASE_TOKEN`  
-- **Value:** paste the token  
-- **Secure** → Save
+- **Value:** paste your token from `login:ci` (only inside Codemagic — never in chat or git)  
+- **Secure** → Save  
+
+If you already ran `login:ci`, use that token once in Codemagic, then **create a new token** (shared tokens should be replaced). See [CODEMAGIC_PASTE_VALUES.md](CODEMAGIC_PASTE_VALUES.md).
 
 ---
 
