@@ -25,7 +25,7 @@ enum AppAppearancePreference: String, Codable, CaseIterable, Identifiable {
     }
 }
 
-struct ThemePalette: Equatable {
+struct ThemePalette {
     let background: Color
     let cardBackground: Color
     let cardStroke: Color

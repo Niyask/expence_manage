@@ -16,10 +16,10 @@ struct DailyExpenseApp: App {
                 .id(themeContext.revision)
                 .onAppear {
                     notificationHandler.configure(store: store)
-                    themeContext.apply(store.settings.appearance)
+                    applyTheme(store.settings.appearance)
                 }
                 .onChange(of: store.settings.appearance) { newValue in
-                    themeContext.apply(newValue)
+                    applyTheme(newValue)
                 }
                 .task {
                     if store.settings.hasCompletedOnboarding,
@@ -29,5 +29,10 @@ struct DailyExpenseApp: App {
                     }
                 }
         }
+    }
+
+    @MainActor
+    private func applyTheme(_ appearance: AppAppearancePreference) {
+        themeContext.apply(appearance)
     }
 }

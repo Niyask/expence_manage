@@ -59,14 +59,7 @@ struct SettingsView: View {
     }
 
     private var appearanceBinding: Binding<AppAppearancePreference> {
-        Binding(
-            get: { store.settings.appearance },
-            set: { newValue in
-                var updated = store.settings
-                updated.appearance = newValue
-                store.settings = updated
-            }
-        )
+        store.settingBinding(\.appearance)
     }
 
     private var appearanceCard: some View {
@@ -102,7 +95,7 @@ struct SettingsView: View {
             Text("Your name (greeting)")
                 .font(.appCaption())
                 .foregroundStyle(palette.textSecondary)
-            TextField("e.g. Niyas", text: $store.settings.displayName)
+            TextField("e.g. Niyas", text: store.settingBinding(\.displayName))
                 .textContentType(.name)
                 .autocorrectionDisabled()
                 .appTextFieldSurface()
@@ -162,9 +155,11 @@ struct SettingsView: View {
             },
             set: { newDate in
                 let c = Calendar.current.dateComponents([.hour, .minute], from: newDate)
-                store.settings.eveningReportHour = c.hour ?? 20
-                store.settings.eveningReportMinute = c.minute ?? 0
-                store.settings.hasConfiguredBedtime = true
+                store.withSettings { settings in
+                    settings.eveningReportHour = c.hour ?? 20
+                    settings.eveningReportMinute = c.minute ?? 0
+                    settings.hasConfiguredBedtime = true
+                }
             }
         )
     }
@@ -182,7 +177,7 @@ struct SettingsView: View {
                     .foregroundStyle(palette.textSecondary)
             }
             Spacer()
-            Toggle("", isOn: $store.settings.weeklyInsightsEnabled)
+            Toggle("", isOn: store.settingBinding(\.weeklyInsightsEnabled))
                 .labelsHidden()
                 .animation(AppAnimations.tabEase, value: store.settings.weeklyInsightsEnabled)
         }
@@ -196,7 +191,7 @@ struct SettingsView: View {
             Text("Currency")
                 .font(.appCaption())
                 .foregroundStyle(palette.textSecondary)
-            Picker("Currency", selection: $store.settings.currencyCode) {
+            Picker("Currency", selection: store.settingBinding(\.currencyCode)) {
                 ForEach(AppCurrency.all) { currency in
                     Text("\(currency.flag) \(currency.name) · \(currency.settingsLabel)")
                         .tag(currency.code)
@@ -230,18 +225,18 @@ struct SettingsView: View {
         Binding(
             get: { store.settings.notificationsEnabled },
             set: { newValue in
-                Task {
+                Task { @MainActor in
                     if newValue {
                         let granted = await store.requestNotificationPermission()
                         if granted {
-                            store.settings.notificationsEnabled = true
+                            store.withSettings { $0.notificationsEnabled = true }
                             await store.refreshNotificationSchedule()
                         } else {
-                            store.settings.notificationsEnabled = false
+                            store.withSettings { $0.notificationsEnabled = false }
                             showPermissionAlert = true
                         }
                     } else {
-                        store.settings.notificationsEnabled = false
+                        store.withSettings { $0.notificationsEnabled = false }
                         await store.refreshNotificationSchedule()
                     }
                     await refreshNotificationStatus()

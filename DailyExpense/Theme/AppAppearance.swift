@@ -2,6 +2,7 @@ import SwiftUI
 import UIKit
 
 enum AppAppearance {
+    @MainActor
     static func apply(_ preference: AppAppearancePreference) {
         let palette = ThemePalette.palette(for: preference)
         let style: UIUserInterfaceStyle = preference == .dark ? .dark : .light
