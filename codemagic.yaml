@@ -8,8 +8,6 @@ workflows:
     environment:
       # Free Apple ID: upload .p12 + profile in Codemagic (see docs/CODE_SIGNING_FREE_APPLE_ID.md)
       ios_signing:
-        distribution_type: development
-        bundle_identifier: com.dailyexpense.app
         certificates:
           - certificate: daily_expense_dev
             bundle_identifier: com.dailyexpense.app
