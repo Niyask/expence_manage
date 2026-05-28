@@ -11,7 +11,7 @@ struct DailyExpenseApp: App {
             RootView()
                 .environmentObject(store)
                 .environmentObject(themeContext)
-                .themedScreen()
+                .environment(\.themePalette, themeContext.palette)
                 .appThemedRoot(appearance: store.settings.appearance)
                 .id(themeContext.revision)
                 .onAppear {

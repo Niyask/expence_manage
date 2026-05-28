@@ -42,11 +42,8 @@ extension Font {
 }
 
 struct ThemedScreenModifier: ViewModifier {
-    @EnvironmentObject private var themeContext: ThemeContext
-
     func body(content: Content) -> some View {
         content
-            .environment(\.themePalette, themeContext.palette)
     }
 }
 

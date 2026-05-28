@@ -22,6 +22,9 @@ struct MainTabView: View {
                     .tabItem { Label("Settings", systemImage: "gearshape.fill") }
                     .tag(2)
             }
+            .environmentObject(store)
+            .environmentObject(themeContext)
+            .environment(\.themePalette, themeContext.palette)
             .tint(AppTheme.primary)
             .animation(AppAnimations.tabEase, value: selectedTab)
 
@@ -33,12 +36,11 @@ struct MainTabView: View {
             .padding(.trailing, 20)
             .padding(.bottom, 56)
         }
-        .themedScreen()
         .sheet(isPresented: $showAddExpense) {
             AddExpenseView()
                 .environmentObject(store)
                 .environmentObject(themeContext)
-                .themedScreen()
+                .environment(\.themePalette, themeContext.palette)
                 .appThemedRoot(appearance: store.settings.appearance)
         }
     }

@@ -8,15 +8,20 @@ struct RootView: View {
         ZStack {
             if store.settings.hasCompletedOnboarding {
                 MainTabView()
+                    .environmentObject(store)
+                    .environmentObject(themeContext)
+                    .environment(\.themePalette, themeContext.palette)
                     .transition(AppAnimations.screenSwap)
                     .zIndex(1)
             } else {
                 OnboardingView()
+                    .environmentObject(store)
+                    .environmentObject(themeContext)
+                    .environment(\.themePalette, themeContext.palette)
                     .transition(AppAnimations.screenSwap)
                     .zIndex(0)
             }
         }
-        .themedScreen()
         .appThemedRoot(appearance: store.settings.appearance)
         .id(themeContext.revision)
         .animation(AppAnimations.cardSpring, value: store.settings.hasCompletedOnboarding)
@@ -37,7 +42,7 @@ struct RootView: View {
                 }
                 .environmentObject(store)
                 .environmentObject(themeContext)
-                .themedScreen()
+                .environment(\.themePalette, themeContext.palette)
                 .appThemedRoot(appearance: store.settings.appearance)
             }
         }
