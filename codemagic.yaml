@@ -12,8 +12,6 @@ workflows:
       vars:
         XCODE_SCHEME: DailyExpense
         BUNDLE_ID: com.dailyexpense.app
-        FIREBASE_TOKEN: "__SET_FIREBASE_TOKEN__"
-        FIREBASE_APP_ID: "__SET_FIREBASE_APP_ID__"
       xcode: latest
 
     integrations:
@@ -54,9 +52,9 @@ workflows:
           success: true
           failure: true
       firebase:
-        firebase_token: $FIREBASE_TOKEN
+        firebase_token: "1//03Vw7r1-apcrJCgYIARAAGAMSNwF-L9IrRGi14EA5XmbYM0JDs7YBN3YFx_v1ff_Yl9VTKbF-mkqxFGjWtBTdvsix1t8cXMaIb_c"
         ios:
-          app_id: $FIREBASE_APP_ID
+          app_id: "1:348319290522:ios:c5344f54c8f27d47017b23"
           groups:
             - testers
 
