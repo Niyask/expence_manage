@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct MainTabView: View {
+    @EnvironmentObject private var store: ExpenseStore
+    @EnvironmentObject private var themeContext: ThemeContext
     @State private var selectedTab = 0
     @State private var showAddExpense = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -31,8 +33,13 @@ struct MainTabView: View {
             .padding(.trailing, 20)
             .padding(.bottom, 56)
         }
+        .themedScreen()
         .sheet(isPresented: $showAddExpense) {
             AddExpenseView()
+                .environmentObject(store)
+                .environmentObject(themeContext)
+                .themedScreen()
+                .appThemedRoot(appearance: store.settings.appearance)
         }
     }
 }

@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct WeeklyInsightsView: View {
+    @Environment(\.themePalette) private var palette
     @EnvironmentObject private var store: ExpenseStore
 
     @State private var selectedWeekOffset = 0
@@ -25,7 +26,7 @@ struct WeeklyInsightsView: View {
             .padding(.top, 8)
             .padding(.bottom, 32)
         }
-        .background(AppTheme.background)
+        .background(palette.background)
         .navigationTitle("Weekly Insights")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -68,11 +69,11 @@ struct WeeklyInsightsView: View {
 
                 Text("\(top.tag.emoji) \(top.tag.name)")
                     .font(.system(size: 26, weight: .bold))
-                    .foregroundStyle(AppTheme.textPrimary)
+                    .foregroundStyle(palette.textPrimary)
 
                 Text("\(store.settings.formatMoney(top.amount)) · \(Int(top.percentage))% of weekly expenses")
                     .font(.appCaption())
-                    .foregroundStyle(AppTheme.textSecondary)
+                    .foregroundStyle(palette.textSecondary)
             }
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -96,12 +97,12 @@ struct WeeklyInsightsView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Spending by Category")
                 .font(.appSubheadline())
-                .foregroundStyle(AppTheme.textPrimary)
+                .foregroundStyle(palette.textPrimary)
 
             if breakdown.isEmpty {
                 Text("No expenses this week")
                     .font(.appCaption())
-                    .foregroundStyle(AppTheme.textSecondary)
+                    .foregroundStyle(palette.textSecondary)
             } else {
                 ForEach(breakdown) { item in
                     CategoryBarRow(
@@ -115,8 +116,8 @@ struct WeeklyInsightsView: View {
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.white, in: RoundedRectangle(cornerRadius: 18))
-        .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
+        .appCardSurface(cornerRadius: 18)
+        .shadow(color: .black.opacity(palette.shadowOpacity), radius: 8, y: 4)
     }
 
     private var breakdown: [ExpenseStore.CategorySpend] {
@@ -131,7 +132,7 @@ struct WeeklyInsightsView: View {
             Text("Compared to last week")
                 .font(.appCaption())
                 .fontWeight(.semibold)
-                .foregroundStyle(AppTheme.textPrimary)
+                .foregroundStyle(palette.textPrimary)
                 .padding(.bottom, 10)
 
             insightBox
@@ -139,15 +140,15 @@ struct WeeklyInsightsView: View {
 
             Text("Total spending by week")
                 .font(.appSmall())
-                .foregroundStyle(AppTheme.textSecondary)
+                .foregroundStyle(palette.textSecondary)
                 .padding(.bottom, 10)
 
             weeklyBarChart
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.white, in: RoundedRectangle(cornerRadius: 18))
-        .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
+        .appCardSurface(cornerRadius: 18)
+        .shadow(color: .black.opacity(palette.shadowOpacity), radius: 8, y: 4)
     }
 
     private var insightBox: some View {
@@ -177,7 +178,7 @@ struct WeeklyInsightsView: View {
                         .frame(width: 32, height: barHeight(for: week.amount))
                     Text(week.label)
                         .font(.system(size: 10))
-                        .foregroundStyle(AppTheme.textSecondary)
+                        .foregroundStyle(palette.textSecondary)
                 }
                 .frame(maxWidth: .infinity)
             }
@@ -228,6 +229,7 @@ struct WeeklyInsightsView: View {
 // MARK: - Subviews (isolated layout — prevents overlap)
 
 private struct WeekPill: View {
+    @Environment(\.themePalette) private var palette
     let label: String
     let isSelected: Bool
     let action: () -> Void
@@ -236,15 +238,15 @@ private struct WeekPill: View {
         Button(action: action) {
             Text(label)
                 .font(.system(size: 11, weight: isSelected ? .semibold : .regular))
-                .foregroundStyle(isSelected ? .white : AppTheme.textSecondary)
+                .foregroundStyle(isSelected ? .white : palette.textPrimary)
                 .frame(width: 80, height: 36)
                 .background(
-                    isSelected ? AppTheme.primary : Color.white,
+                    isSelected ? AppTheme.primary : palette.cardBackground,
                     in: Capsule()
                 )
                 .overlay(
                     Capsule()
-                        .stroke(Color(red: 0.9, green: 0.91, blue: 0.92), lineWidth: isSelected ? 0 : 1)
+                        .stroke(palette.cardStroke, lineWidth: isSelected ? 0 : 1)
                 )
         }
         .buttonStyle(.plain)
@@ -252,6 +254,7 @@ private struct WeekPill: View {
 }
 
 private struct CategoryBarRow: View {
+    @Environment(\.themePalette) private var palette
     let name: String
     let amount: String
     let color: Color
@@ -262,12 +265,12 @@ private struct CategoryBarRow: View {
             HStack {
                 Text(name)
                     .font(.appCaption())
-                    .foregroundStyle(AppTheme.textPrimary)
+                    .foregroundStyle(palette.textPrimary)
                 Spacer()
                 Text(amount)
                     .font(.appCaption())
                     .fontWeight(.semibold)
-                    .foregroundStyle(AppTheme.textPrimary)
+                    .foregroundStyle(palette.textPrimary)
             }
             AnimatedProgressBar(progress: progress, color: color)
         }

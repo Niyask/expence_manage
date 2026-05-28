@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct FinancialReportView: View {
+    @Environment(\.themePalette) private var palette
     @EnvironmentObject private var store: ExpenseStore
     @State private var period: ReportPeriod = .week
     @State private var showWeekly = false
@@ -32,7 +33,7 @@ struct FinancialReportView: View {
                     Group {
                     Text("Financial Report")
                         .font(.appTitle())
-                        .foregroundStyle(AppTheme.textPrimary)
+                        .foregroundStyle(palette.textPrimary)
                         .appearOnLoad(delay: 0)
 
                     periodPicker
@@ -45,8 +46,8 @@ struct FinancialReportView: View {
                             .animation(AppAnimations.cardSpring, value: period)
 
                         HStack(spacing: 12) {
-                            splitCard(title: "↑ Income", amount: incomeTotal, color: AppTheme.income)
-                            splitCard(title: "↓ Expenses", amount: expenseTotal, color: AppTheme.expense)
+                            splitCard(title: "↑ Total Income", amount: incomeTotal, color: AppTheme.income)
+                            splitCard(title: "↓ Expenses (\(period.rawValue))", amount: expenseTotal, color: AppTheme.expense)
                         }
 
                         spendingOverviewCard
@@ -70,7 +71,7 @@ struct FinancialReportView: View {
                 .padding(.top, 8)
                 .padding(.bottom, 100)
             }
-            .background(AppTheme.background)
+            .background(palette.background)
             .navigationBarHidden(true)
             .navigationDestination(isPresented: $showWeekly) {
                 WeeklyInsightsView()
@@ -88,16 +89,16 @@ struct FinancialReportView: View {
                 } label: {
                     Text(p.rawValue)
                         .font(.system(size: 12, weight: period == p ? .semibold : .regular))
-                        .foregroundStyle(period == p ? .white : AppTheme.textSecondary)
+                        .foregroundStyle(period == p ? .white : palette.textPrimary)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 9)
                         .background(
-                            period == p ? AppTheme.primary : Color.white,
+                            period == p ? AppTheme.primary : palette.cardBackground,
                             in: Capsule()
                         )
                         .overlay(
                             Capsule()
-                                .stroke(Color(red: 0.9, green: 0.91, blue: 0.92), lineWidth: period == p ? 0 : 1)
+                                .stroke(palette.cardStroke, lineWidth: period == p ? 0 : 1)
                         )
                 }
                 .scalePressStyle()
@@ -118,8 +119,8 @@ struct FinancialReportView: View {
             statCell(value: "\(savingsPercent)%", label: "Saved")
         }
         .padding(.vertical, 12)
-        .background(.white, in: RoundedRectangle(cornerRadius: 14))
-        .shadow(color: .black.opacity(0.04), radius: 6, y: 2)
+        .appCardSurface()
+        .shadow(color: .black.opacity(palette.shadowOpacity), radius: 6, y: 2)
     }
 
     private func statCell(value: String, label: String) -> some View {
@@ -129,7 +130,7 @@ struct FinancialReportView: View {
                 .foregroundStyle(AppTheme.primary)
             Text(label)
                 .font(.appSmall())
-                .foregroundStyle(AppTheme.textSecondary)
+                .foregroundStyle(palette.textSecondary)
         }
         .frame(maxWidth: .infinity)
     }
@@ -161,24 +162,26 @@ struct FinancialReportView: View {
 
     private var netBalanceCard: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Net Balance (\(period.rawValue))")
+            Text("Balance · expenses \(period.rawValue.lowercased())")
                 .font(.appCaption())
-                .foregroundStyle(.white.opacity(0.85))
+                .foregroundStyle(.white.opacity(0.9))
             Text(store.settings.formatMoney(incomeTotal - expenseTotal, signed: true))
                 .font(.system(size: 34, weight: .bold))
                 .foregroundStyle(.white)
-            Text("Income \(store.settings.formatMoney(incomeTotal))  −  Expenses \(store.settings.formatMoney(expenseTotal))")
+            Text("Total income \(store.settings.formatMoney(incomeTotal))  −  Expenses \(store.settings.formatMoney(expenseTotal))")
                 .font(.appSmall())
-                .foregroundStyle(.white.opacity(0.8))
+                .foregroundStyle(.white.opacity(0.88))
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(AppTheme.incomeGradient, in: RoundedRectangle(cornerRadius: 22))
         .shadow(color: AppTheme.primary.opacity(0.25), radius: 12, y: 6)
+        .colorScheme(.dark)
     }
 
+    /// Income is always cumulative (not filtered by report period).
     private var incomeTotal: Decimal {
-        store.transactions(in: interval).filter { $0.type == .income }.reduce(0) { $0 + $1.amount }
+        store.lifetimeIncome
     }
 
     private var expenseTotal: Decimal {
@@ -205,18 +208,18 @@ struct FinancialReportView: View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Spending Overview")
                 .font(.appSubheadline())
-                .foregroundStyle(AppTheme.textPrimary)
+                .foregroundStyle(palette.textPrimary)
 
             if categoryBreakdown.isEmpty {
                 Text("No expenses in this period")
                     .font(.appCaption())
-                    .foregroundStyle(AppTheme.textSecondary)
+                    .foregroundStyle(palette.textSecondary)
             } else {
                 ForEach(categoryBreakdown.prefix(3)) { item in
                     HStack(spacing: 8) {
                         Text("\(item.tag.name) \(Int(item.percentage))%")
                             .font(.appSmall())
-                            .foregroundStyle(AppTheme.textSecondary)
+                            .foregroundStyle(palette.textSecondary)
                             .frame(width: 90, alignment: .leading)
                         AnimatedProgressBar(
                             progress: CGFloat(item.percentage / 100),
@@ -230,8 +233,8 @@ struct FinancialReportView: View {
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.white, in: RoundedRectangle(cornerRadius: 16))
-        .shadow(color: .black.opacity(0.04), radius: 6, y: 2)
+        .appCardSurface(cornerRadius: 16)
+        .shadow(color: .black.opacity(palette.shadowOpacity), radius: 6, y: 2)
     }
 
     private var categoryBreakdown: [ExpenseStore.CategorySpend] {
@@ -242,8 +245,9 @@ struct FinancialReportView: View {
 
     private var incomeSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Income Sources")
+            Text("Income Sources (all time)")
                 .font(.appSubheadline())
+                .foregroundStyle(palette.textPrimary)
             if incomeBreakdown.isEmpty {
                 emptyRow(message: "No income recorded")
             } else {
@@ -258,6 +262,7 @@ struct FinancialReportView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Top Expenses \(period == .today ? "Today" : period.rawValue)")
                 .font(.appSubheadline())
+                .foregroundStyle(palette.textPrimary)
             if categoryBreakdown.isEmpty {
                 emptyRow(message: "No expenses recorded")
             } else {
@@ -274,7 +279,7 @@ struct FinancialReportView: View {
     }
 
     private var incomeBreakdown: [ExpenseStore.CategorySpend] {
-        let income = store.transactions(in: interval).filter { $0.type == .income }
+        let income = store.transactions.filter { $0.type == .income }
         let total = income.reduce(Decimal(0)) { $0 + $1.amount }
         guard total > 0 else { return [] }
         var grouped: [UUID: Decimal] = [:]
@@ -293,7 +298,7 @@ struct FinancialReportView: View {
                 .frame(width: 28)
             Text(title)
                 .font(.appBody())
-                .foregroundStyle(AppTheme.textPrimary)
+                .foregroundStyle(palette.textPrimary)
             Spacer()
             Text(store.settings.formatMoney(amount))
                 .font(.appBody())
@@ -301,16 +306,16 @@ struct FinancialReportView: View {
                 .foregroundStyle(color)
         }
         .padding(14)
-        .background(.white, in: RoundedRectangle(cornerRadius: 12))
+        .appCardSurface(cornerRadius: 12)
     }
 
     private func emptyRow(message: String) -> some View {
         Text(message)
             .font(.appCaption())
-            .foregroundStyle(AppTheme.textSecondary)
+            .foregroundStyle(palette.textSecondary)
             .frame(maxWidth: .infinity)
             .padding()
-            .background(.white, in: RoundedRectangle(cornerRadius: 12))
+            .appCardSurface(cornerRadius: 12)
     }
 
     // MARK: - Bottom cards
@@ -345,31 +350,33 @@ struct FinancialReportView: View {
         return VStack(alignment: .leading, spacing: 10) {
             Text("This month · week by week")
                 .font(.appSubheadline())
+                .foregroundStyle(palette.textPrimary)
             if archives.isEmpty {
                 Text("No data in the last \(ExpenseStore.maxRetentionMonths) months")
                     .font(.appCaption())
-                    .foregroundStyle(AppTheme.textSecondary)
+                    .foregroundStyle(palette.textSecondary)
             } else if let current = archives.first {
                 ForEach(current.weeks) { week in
                     HStack {
                         Text(week.label)
                             .font(.appCaption())
+                            .foregroundStyle(palette.textPrimary)
                         Spacer()
-                        Text(store.settings.formatMoney(week.net, signed: true))
+                        Text(store.settings.formatMoney(week.expense))
                             .font(.appCaption())
                             .fontWeight(.semibold)
-                            .foregroundStyle(week.net >= 0 ? AppTheme.income : AppTheme.expense)
+                            .foregroundStyle(AppTheme.expense)
                     }
                 }
                 Text("Data older than \(ExpenseStore.maxRetentionMonths) months is removed automatically.")
                     .font(.appSmall())
-                    .foregroundStyle(AppTheme.textSecondary)
+                    .foregroundStyle(palette.textSecondary)
             }
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.white, in: RoundedRectangle(cornerRadius: 16))
-        .shadow(color: .black.opacity(0.04), radius: 6, y: 2)
+        .appCardSurface(cornerRadius: 16)
+        .shadow(color: .black.opacity(palette.shadowOpacity), radius: 6, y: 2)
     }
 
     private var weeklyLinkButton: some View {

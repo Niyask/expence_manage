@@ -21,7 +21,7 @@ struct ExpenseTag: Identifiable, Hashable, Codable {
         self.type = type
     }
 
-    var color: Color { Color(hex: colorHex) ?? AppTheme.textSecondary }
+    var color: Color { Color(hex: colorHex) ?? ThemePalette.light.textSecondary }
 }
 
 struct Transaction: Identifiable, Codable, Hashable {
@@ -58,6 +58,7 @@ struct AppSettings: Codable, Equatable {
     var notificationsEnabled: Bool = true
     var hasCompletedOnboarding: Bool = false
     var currencyCode: String = AppCurrency.default.code
+    var appearance: AppAppearancePreference = .light
 
     var currency: AppCurrency {
         AppCurrency.with(code: currencyCode) ?? .default
@@ -98,6 +99,7 @@ struct AppSettings: Codable, Equatable {
         case hasCompletedOnboarding
         case currencyCode
         case currencySymbol
+        case appearance
     }
 
     init() {}
@@ -121,6 +123,7 @@ struct AppSettings: Codable, Equatable {
         } else {
             currencyCode = AppCurrency.default.code
         }
+        appearance = try c.decodeIfPresent(AppAppearancePreference.self, forKey: .appearance) ?? .light
     }
 
     func encode(to encoder: Encoder) throws {
@@ -133,6 +136,7 @@ struct AppSettings: Codable, Equatable {
         try c.encode(notificationsEnabled, forKey: .notificationsEnabled)
         try c.encode(hasCompletedOnboarding, forKey: .hasCompletedOnboarding)
         try c.encode(currencyCode, forKey: .currencyCode)
+        try c.encode(appearance, forKey: .appearance)
     }
 }
 

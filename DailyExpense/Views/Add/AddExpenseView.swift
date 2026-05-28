@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct AddExpenseView: View {
+    @Environment(\.themePalette) private var palette
     @EnvironmentObject private var store: ExpenseStore
     @Environment(\.dismiss) private var dismiss
 
@@ -21,14 +22,14 @@ struct AddExpenseView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Amount")
                             .font(.appCaption())
-                            .foregroundStyle(AppTheme.textSecondary)
+                            .foregroundStyle(palette.textSecondary)
                         HStack(alignment: .firstTextBaseline, spacing: 4) {
                             Text(store.settings.currencySymbol)
                                 .font(.system(size: 48, weight: .bold))
                             TextField("0", text: $amountText)
                                 .font(.system(size: 48, weight: .bold))
                                 .keyboardType(.decimalPad)
-                                .foregroundStyle(AppTheme.textPrimary)
+                                .foregroundStyle(palette.textPrimary)
                         }
                         Rectangle()
                             .fill(AppTheme.summaryGradient)
@@ -40,6 +41,7 @@ struct AddExpenseView: View {
 
                     Text("Category")
                         .font(.appSubheadline())
+                        .foregroundStyle(palette.textPrimary)
 
                     FlowTagLayout(spacing: 10) {
                         ForEach(Array(store.tags(for: entryType).enumerated()), id: \.element.id) { index, tag in
@@ -54,17 +56,18 @@ struct AddExpenseView: View {
                     .animation(AppAnimations.listSpring, value: entryType)
 
                     TextField("Add a note (optional)", text: $note)
-                        .padding()
-                        .background(.white, in: RoundedRectangle(cornerRadius: 14))
+                        .appTextFieldSurface()
 
                     DatePicker("Date", selection: $date, displayedComponents: [.date])
+                        .tint(AppTheme.primary)
+                        .foregroundStyle(palette.textPrimary)
                         .padding()
-                        .background(.white, in: RoundedRectangle(cornerRadius: 14))
+                        .appCardSurface()
                         .appearOnLoad(delay: AppAnimations.staggerDelay * 4)
                 }
                 .padding(24)
             }
-            .background(AppTheme.background)
+            .background(palette.background)
             .navigationTitle("Add Expense")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -99,7 +102,7 @@ struct AddExpenseView: View {
             typeButton("Income", type: .income)
         }
         .padding(4)
-        .background(Color(red: 0.94, green: 0.95, blue: 0.96), in: RoundedRectangle(cornerRadius: 10))
+        .background(palette.toggleTrack, in: RoundedRectangle(cornerRadius: 10))
     }
 
     private func typeButton(_ title: String, type: TransactionType) -> some View {
@@ -111,7 +114,7 @@ struct AddExpenseView: View {
             Text(title)
                 .font(.appCaption())
                 .fontWeight(entryType == type ? .semibold : .regular)
-                .foregroundStyle(entryType == type ? .white : AppTheme.textSecondary)
+                .foregroundStyle(entryType == type ? .white : palette.textSecondary)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 10)
                 .background(entryType == type ? (type == .income ? AppTheme.income : AppTheme.primary) : .clear, in: RoundedRectangle(cornerRadius: 8))

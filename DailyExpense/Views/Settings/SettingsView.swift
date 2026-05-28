@@ -2,6 +2,7 @@ import SwiftUI
 import UIKit
 
 struct SettingsView: View {
+    @Environment(\.themePalette) private var palette
     @EnvironmentObject private var store: ExpenseStore
     @Environment(\.openURL) private var openURL
     @State private var notificationStatus: String = "Checking…"
@@ -14,8 +15,10 @@ struct SettingsView: View {
                     Group {
                         Text("Settings")
                             .font(.appTitle())
+                            .foregroundStyle(palette.textPrimary)
                             .appearOnLoad()
 
+                        appearanceCard
                         profileCard
                         eveningReportCard
                         weeklyInsightsCard
@@ -32,7 +35,7 @@ struct SettingsView: View {
 
                         Text("Daily Expense v1.0 · iOS 16+")
                             .font(.appSmall())
-                            .foregroundStyle(AppTheme.textSecondary)
+                            .foregroundStyle(palette.textSecondary)
                             .frame(maxWidth: .infinity)
                             .padding(.top, 8)
                     }
@@ -40,7 +43,7 @@ struct SettingsView: View {
                 .padding(24)
                 .padding(.bottom, 100)
             }
-            .background(AppTheme.background)
+            .background(palette.background)
             .task { await refreshNotificationStatus() }
             .alert("Notifications Disabled", isPresented: $showPermissionAlert) {
                 Button("Open Settings") {
@@ -55,20 +58,58 @@ struct SettingsView: View {
         }
     }
 
+    private var appearanceBinding: Binding<AppAppearancePreference> {
+        Binding(
+            get: { store.settings.appearance },
+            set: { newValue in
+                var updated = store.settings
+                updated.appearance = newValue
+                store.settings = updated
+            }
+        )
+    }
+
+    private var appearanceCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 12) {
+                Image(systemName: store.settings.appearance.icon)
+                    .font(.system(size: 22))
+                    .foregroundStyle(AppTheme.primary)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Appearance")
+                        .font(.appSubheadline())
+                        .foregroundStyle(palette.textPrimary)
+                    Text("Light or dark theme for the whole app")
+                        .font(.appSmall())
+                        .foregroundStyle(palette.textSecondary)
+                }
+            }
+            Picker("Theme", selection: appearanceBinding) {
+                ForEach(AppAppearancePreference.allCases) { mode in
+                    Text(mode.title).tag(mode)
+                }
+            }
+            .pickerStyle(.segmented)
+        }
+        .padding(16)
+        .appCardSurface(cornerRadius: 16)
+        .shadow(color: .black.opacity(palette.shadowOpacity), radius: 6, y: 2)
+        .appearOnLoad(delay: 0)
+    }
+
     private var profileCard: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Your name (greeting)")
                 .font(.appCaption())
-                .foregroundStyle(AppTheme.textSecondary)
+                .foregroundStyle(palette.textSecondary)
             TextField("e.g. Niyas", text: $store.settings.displayName)
                 .textContentType(.name)
                 .autocorrectionDisabled()
-                .padding()
-                .background(.white, in: RoundedRectangle(cornerRadius: 14))
+                .appTextFieldSurface()
         }
         .padding(16)
-        .background(.white, in: RoundedRectangle(cornerRadius: 16))
-        .shadow(color: .black.opacity(0.04), radius: 6, y: 2)
+        .appCardSurface(cornerRadius: 16)
+        .shadow(color: .black.opacity(palette.shadowOpacity), radius: 6, y: 2)
         .appearOnLoad(delay: 0)
     }
 
@@ -80,11 +121,12 @@ struct SettingsView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Bedtime Reminder")
                         .font(.appSubheadline())
+                        .foregroundStyle(palette.textPrimary)
                     Text(store.settings.hasConfiguredBedtime
                          ? "Daily summary at \(store.settings.bedtimeTimeLabel)"
                          : "Default \(store.settings.bedtimeTimeLabel) · tap to customize")
                         .font(.appSmall())
-                        .foregroundStyle(AppTheme.textSecondary)
+                        .foregroundStyle(palette.textSecondary)
                 }
             }
             DatePicker(
@@ -94,9 +136,10 @@ struct SettingsView: View {
             )
             .datePickerStyle(.compact)
             .labelsHidden()
+            .tint(AppTheme.primary)
             .frame(maxWidth: .infinity)
             .padding()
-            .background(.white, in: RoundedRectangle(cornerRadius: 14))
+            .appCardSurface()
         }
         .padding(20)
         .background(
@@ -133,9 +176,10 @@ struct SettingsView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("Weekly Insights")
                     .font(.appBody())
+                    .foregroundStyle(palette.textPrimary)
                 Text("See top spend category each week")
                     .font(.appSmall())
-                    .foregroundStyle(AppTheme.textSecondary)
+                    .foregroundStyle(palette.textSecondary)
             }
             Spacer()
             Toggle("", isOn: $store.settings.weeklyInsightsEnabled)
@@ -143,7 +187,7 @@ struct SettingsView: View {
                 .animation(AppAnimations.tabEase, value: store.settings.weeklyInsightsEnabled)
         }
         .padding(16)
-        .background(.white, in: RoundedRectangle(cornerRadius: 16))
+        .appCardSurface(cornerRadius: 16)
         .appearOnLoad(delay: AppAnimations.staggerDelay)
     }
 
@@ -151,7 +195,7 @@ struct SettingsView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Currency")
                 .font(.appCaption())
-                .foregroundStyle(AppTheme.textSecondary)
+                .foregroundStyle(palette.textSecondary)
             Picker("Currency", selection: $store.settings.currencyCode) {
                 ForEach(AppCurrency.all) { currency in
                     Text("\(currency.flag) \(currency.name) · \(currency.settingsLabel)")
@@ -162,11 +206,11 @@ struct SettingsView: View {
             .tint(AppTheme.primary)
             .padding()
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(.white, in: RoundedRectangle(cornerRadius: 14))
+            .appCardSurface()
         }
         .padding(16)
-        .background(.white, in: RoundedRectangle(cornerRadius: 16))
-        .shadow(color: .black.opacity(0.04), radius: 6, y: 2)
+        .appCardSurface(cornerRadius: 16)
+        .shadow(color: .black.opacity(palette.shadowOpacity), radius: 6, y: 2)
         .bounceOnChange(value: store.settings.currencyCode)
         .appearOnLoad(delay: AppAnimations.staggerDelay * 2)
     }
@@ -229,18 +273,18 @@ struct SettingsView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Replay onboarding")
                         .font(.appBody())
-                        .foregroundStyle(AppTheme.textPrimary)
+                        .foregroundStyle(palette.textPrimary)
                     Text("See the welcome tour again")
                         .font(.appSmall())
-                        .foregroundStyle(AppTheme.textSecondary)
+                        .foregroundStyle(palette.textSecondary)
                 }
                 Spacer()
                 Text("›")
                     .font(.system(size: 18))
-                    .foregroundStyle(Color(red: 0.8, green: 0.82, blue: 0.84))
+                    .foregroundStyle(palette.chevron)
             }
             .padding(16)
-            .background(.white, in: RoundedRectangle(cornerRadius: 16))
+            .appCardSurface(cornerRadius: 16)
         }
         .scalePressStyle()
     }
@@ -261,10 +305,10 @@ struct SettingsView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Storage policy")
                 .font(.appCaption())
-                .foregroundStyle(AppTheme.textSecondary)
+                .foregroundStyle(palette.textSecondary)
             Text("Transactions older than \(ExpenseStore.maxRetentionMonths) months are removed automatically. Each month is summarized week-by-week in Reports and All Transactions.")
                 .font(.appSmall())
-                .foregroundStyle(AppTheme.textSecondary)
+                .foregroundStyle(palette.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding(16)
@@ -275,10 +319,10 @@ struct SettingsView: View {
         VStack(alignment: .leading, spacing: 6) {
             Text("Privacy & security")
                 .font(.appCaption())
-                .foregroundStyle(AppTheme.textSecondary)
+                .foregroundStyle(palette.textSecondary)
             Text("Data stays on your device with file protection. No account or cloud sync in v1.0.")
                 .font(.appSmall())
-                .foregroundStyle(AppTheme.textSecondary)
+                .foregroundStyle(palette.textSecondary)
         }
         .padding(16)
         .background(AppTheme.primary.opacity(0.06), in: RoundedRectangle(cornerRadius: 12))
@@ -302,7 +346,7 @@ struct SettingsView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
                 .font(.appCaption())
-                .foregroundStyle(AppTheme.textSecondary)
+                .foregroundStyle(palette.textSecondary)
             VStack(spacing: 0) {
                 ForEach(Array(rows.enumerated()), id: \.offset) { index, row in
                     if index > 0 {
@@ -311,7 +355,7 @@ struct SettingsView: View {
                     SettingsRowView(row: row)
                 }
             }
-            .background(.white, in: RoundedRectangle(cornerRadius: 16))
+            .appCardSurface(cornerRadius: 16)
         }
     }
 }
@@ -325,6 +369,7 @@ struct SettingsRow {
 }
 
 struct SettingsRowView: View {
+    @Environment(\.themePalette) private var palette
     let row: SettingsRow
 
     var body: some View {
@@ -335,10 +380,11 @@ struct SettingsRowView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(row.title)
                     .font(.appBody())
+                    .foregroundStyle(palette.textPrimary)
                 if let subtitle = row.subtitle {
                     Text(subtitle)
                         .font(.appSmall())
-                        .foregroundStyle(AppTheme.textSecondary)
+                        .foregroundStyle(palette.textSecondary)
                 }
             }
             Spacer()
@@ -348,12 +394,12 @@ struct SettingsRowView: View {
             } else if let value = row.value {
                 Text(value)
                     .font(.appCaption())
-                    .foregroundStyle(AppTheme.textSecondary)
+                    .foregroundStyle(palette.textSecondary)
             }
             if row.toggleBinding == nil {
                 Text("›")
                     .font(.system(size: 18))
-                    .foregroundStyle(Color(red: 0.8, green: 0.82, blue: 0.84))
+                    .foregroundStyle(palette.chevron)
             }
         }
         .padding(.horizontal, 16)

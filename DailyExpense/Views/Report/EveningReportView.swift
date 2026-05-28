@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct EveningReportView: View {
+    @Environment(\.themePalette) private var palette
     @EnvironmentObject private var store: ExpenseStore
     let date: Date
 
@@ -18,7 +19,7 @@ struct EveningReportView: View {
             }
             .padding(.bottom, 24)
         }
-        .background(AppTheme.background)
+        .background(palette.background)
         .navigationTitle("Bedtime Summary")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -43,6 +44,7 @@ struct EveningReportView: View {
         .padding(24)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(AppTheme.eveningHeaderGradient)
+        .colorScheme(.dark)
     }
 
     private var summaryRow: some View {
@@ -52,7 +54,7 @@ struct EveningReportView: View {
             summaryCell("💰 Net", value: store.netBalance(on: date), color: AppTheme.secondary)
         }
         .padding(16)
-        .background(.white, in: RoundedRectangle(cornerRadius: 16))
+        .appCardSurface(cornerRadius: 16)
         .padding(.horizontal, 24)
         .offset(y: -20)
     }
@@ -61,7 +63,7 @@ struct EveningReportView: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
                 .font(.appSmall())
-                .foregroundStyle(AppTheme.textSecondary)
+                .foregroundStyle(palette.textSecondary)
             Text(store.settings.formatMoney(value, signed: title.contains("Net")))
                 .font(.system(size: 14, weight: .bold))
                 .foregroundStyle(color)
@@ -74,20 +76,21 @@ struct EveningReportView: View {
             HStack {
                 Text("All transactions")
                     .font(.appHeadline())
+                    .foregroundStyle(palette.textPrimary)
                 Spacer()
                 Text("Sorted by price")
                     .font(.appSmall())
-                    .foregroundStyle(AppTheme.textSecondary)
+                    .foregroundStyle(palette.textSecondary)
             }
             .padding(.horizontal, 24)
 
             if dayTransactions.isEmpty {
                 Text("No transactions today")
                     .font(.appCaption())
-                    .foregroundStyle(AppTheme.textSecondary)
+                    .foregroundStyle(palette.textSecondary)
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(.white, in: RoundedRectangle(cornerRadius: 14))
+                    .appCardSurface()
                     .padding(.horizontal, 24)
             } else {
                 ForEach(dayTransactions) { tx in
@@ -115,14 +118,16 @@ struct EveningReportView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Expenses by category")
                         .font(.appSubheadline())
+                        .foregroundStyle(palette.textPrimary)
                     ForEach(breakdown) { item in
                         HStack {
                             Text(item.tag.name)
                                 .font(.appCaption())
+                                .foregroundStyle(palette.textPrimary)
                             Spacer()
                             Text("\(Int(item.percentage))%")
                                 .font(.appCaption())
-                                .foregroundStyle(AppTheme.textSecondary)
+                                .foregroundStyle(palette.textSecondary)
                         }
                         AnimatedProgressBar(
                             progress: CGFloat(item.percentage / 100),
@@ -131,7 +136,7 @@ struct EveningReportView: View {
                     }
                 }
                 .padding(16)
-                .background(.white, in: RoundedRectangle(cornerRadius: 18))
+                .appCardSurface(cornerRadius: 18)
                 .padding(.horizontal, 24)
             }
         }

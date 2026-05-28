@@ -87,6 +87,16 @@ final class ExpenseStore: ObservableObject {
         transactions.filter { $0.type == .expense }.reduce(0) { $0 + $1.amount }
     }
 
+    var lifetimeNetBalance: Decimal {
+        lifetimeIncome - lifetimeExpenses
+    }
+
+    /// Expenses in the calendar week containing `date` (used for week-only insights).
+    func expenseTotalThisWeek(containing date: Date = Date(), calendar: Calendar = .current) -> Decimal {
+        guard let interval = weekInterval(containing: date, calendar: calendar) else { return 0 }
+        return expenseTotal(in: interval)
+    }
+
     @discardableResult
     func addTransaction(amount: Decimal, tag: ExpenseTag, note: String, date: Date, type: TransactionType) -> Bool {
         guard amount > 0, amount <= InputValidator.maxAmount else { return false }

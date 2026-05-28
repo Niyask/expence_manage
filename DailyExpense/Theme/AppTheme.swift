@@ -1,14 +1,12 @@
 import SwiftUI
 
+/// Brand colors (shared across light and dark).
 enum AppTheme {
-    static let background = Color(red: 0.973, green: 0.98, blue: 0.988)
     static let primary = Color(red: 0.051, green: 0.58, blue: 0.533)
     static let primaryLight = Color(red: 0.204, green: 0.827, blue: 0.6)
     static let secondary = Color(red: 0.388, green: 0.4, blue: 0.945)
     static let income = Color(red: 0.063, green: 0.725, blue: 0.506)
     static let expense = Color(red: 0.937, green: 0.267, blue: 0.267)
-    static let textPrimary = Color(red: 0.059, green: 0.09, blue: 0.165)
-    static let textSecondary = Color(red: 0.392, green: 0.455, blue: 0.545)
     static let accentOrange = Color(red: 0.976, green: 0.451, blue: 0.086)
 
     static let summaryGradient = LinearGradient(
@@ -31,6 +29,7 @@ enum AppTheme {
         startPoint: .bottomLeading,
         endPoint: .topTrailing
     )
+
 }
 
 extension Font {
@@ -40,4 +39,57 @@ extension Font {
     static func appBody() -> Font { .system(size: 14, weight: .medium) }
     static func appCaption() -> Font { .system(size: 12, weight: .medium) }
     static func appSmall() -> Font { .system(size: 11, weight: .regular) }
+}
+
+struct ThemedScreenModifier: ViewModifier {
+    @EnvironmentObject private var themeContext: ThemeContext
+
+    func body(content: Content) -> some View {
+        content
+            .environment(\.themePalette, themeContext.palette)
+    }
+}
+
+extension View {
+    func themedScreen() -> some View {
+        modifier(ThemedScreenModifier())
+    }
+
+    func appCardSurface(cornerRadius: CGFloat = 14) -> some View {
+        modifier(AppCardSurfaceModifier(cornerRadius: cornerRadius))
+    }
+
+    func appTextFieldSurface(cornerRadius: CGFloat = 14) -> some View {
+        modifier(AppTextFieldSurfaceModifier(cornerRadius: cornerRadius))
+    }
+
+    func appThemedRoot(appearance: AppAppearancePreference) -> some View {
+        preferredColorScheme(appearance.colorScheme)
+            .tint(AppTheme.primary)
+    }
+}
+
+private struct AppCardSurfaceModifier: ViewModifier {
+    @Environment(\.themePalette) private var palette
+    var cornerRadius: CGFloat
+
+    func body(content: Content) -> some View {
+        content.background(palette.cardBackground, in: RoundedRectangle(cornerRadius: cornerRadius))
+    }
+}
+
+private struct AppTextFieldSurfaceModifier: ViewModifier {
+    @Environment(\.themePalette) private var palette
+    var cornerRadius: CGFloat
+
+    func body(content: Content) -> some View {
+        content
+            .foregroundStyle(palette.textPrimary)
+            .padding()
+            .background(palette.fieldBackground, in: RoundedRectangle(cornerRadius: cornerRadius))
+            .overlay(
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .stroke(palette.cardStroke, lineWidth: 1)
+            )
+    }
 }

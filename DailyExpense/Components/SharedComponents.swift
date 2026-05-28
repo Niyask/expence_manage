@@ -7,16 +7,18 @@ struct SummaryCard: View {
     let expenses: Decimal
     let currencySymbol: String
     var currencyLocaleIdentifier: String = "en_US"
+    /// Shown under total expenses — week-based spend only.
+    var weeklyExpenses: Decimal?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(greeting)
                 .font(.appBody())
-                .foregroundStyle(.white.opacity(0.9))
+                .foregroundStyle(.white.opacity(0.95))
 
-            Text("Net Balance Today")
+            Text("Net Balance")
                 .font(.appSmall())
-                .foregroundStyle(.white.opacity(0.7))
+                .foregroundStyle(.white.opacity(0.85))
 
             Text(MoneyFormat.string(netBalance, symbol: currencySymbol, localeIdentifier: currencyLocaleIdentifier, signed: true))
                 .font(.system(size: 34, weight: .bold))
@@ -24,40 +26,47 @@ struct SummaryCard: View {
 
             HStack(spacing: 0) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Income")
+                    Text("Total Income")
                         .font(.appSmall())
-                        .foregroundStyle(.white.opacity(0.7))
+                        .foregroundStyle(.white.opacity(0.85))
                     Text(MoneyFormat.string(income, symbol: currencySymbol, localeIdentifier: currencyLocaleIdentifier))
                         .font(.system(size: 15, weight: .bold))
-                        .foregroundStyle(AppTheme.primaryLight)
+                        .foregroundStyle(Color(red: 0.75, green: 1, blue: 0.88))
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
                 Rectangle()
-                    .fill(.white.opacity(0.25))
-                    .frame(width: 1, height: 32)
+                    .fill(.white.opacity(0.35))
+                    .frame(width: 1, height: 36)
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Expenses")
+                    Text("Total Expenses")
                         .font(.appSmall())
-                        .foregroundStyle(.white.opacity(0.7))
+                        .foregroundStyle(.white.opacity(0.85))
                     Text(MoneyFormat.string(expenses, symbol: currencySymbol, localeIdentifier: currencyLocaleIdentifier))
                         .font(.system(size: 15, weight: .bold))
-                        .foregroundStyle(Color(red: 1, green: 0.85, blue: 0.85))
+                        .foregroundStyle(Color(red: 1, green: 0.82, blue: 0.82))
+                    if let weeklyExpenses {
+                        Text("This week: \(MoneyFormat.string(weeklyExpenses, symbol: currencySymbol, localeIdentifier: currencyLocaleIdentifier))")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundStyle(.white.opacity(0.75))
+                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(12)
-            .background(.white.opacity(0.15), in: RoundedRectangle(cornerRadius: 12))
+            .background(Color.black.opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(AppTheme.summaryGradient, in: RoundedRectangle(cornerRadius: 24))
         .shadow(color: AppTheme.primary.opacity(0.3), radius: 16, y: 8)
+        .colorScheme(.dark)
     }
 }
 
 struct BannerRow: View {
+    @Environment(\.themePalette) private var palette
     let icon: String
     let title: String
     var subtitle: String? = nil
@@ -80,7 +89,7 @@ struct BannerRow: View {
                 if let subtitle {
                     Text(subtitle)
                         .font(.appSmall())
-                        .foregroundStyle(AppTheme.textSecondary)
+                        .foregroundStyle(palette.textSecondary)
                 }
             }
             Spacer(minLength: 0)
@@ -97,6 +106,7 @@ struct BannerRow: View {
 }
 
 struct QuickActionButton: View {
+    @Environment(\.themePalette) private var palette
     let emoji: String
     let title: String
     let action: () -> Void
@@ -108,18 +118,19 @@ struct QuickActionButton: View {
                     .font(.system(size: 22))
                 Text(title)
                     .font(.appSmall())
-                    .foregroundStyle(AppTheme.textPrimary)
+                    .foregroundStyle(palette.textPrimary)
             }
             .frame(maxWidth: .infinity)
             .frame(height: 76)
-            .background(.white, in: RoundedRectangle(cornerRadius: 14))
-            .shadow(color: .black.opacity(0.05), radius: 6, y: 2)
+            .appCardSurface()
+            .shadow(color: .black.opacity(palette.shadowOpacity), radius: 6, y: 2)
         }
         .scalePressStyle()
     }
 }
 
 struct TransactionRow: View {
+    @Environment(\.themePalette) private var palette
     let tag: ExpenseTag
     let title: String
     let subtitle: String
@@ -138,10 +149,10 @@ struct TransactionRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.appBody())
-                    .foregroundStyle(AppTheme.textPrimary)
+                    .foregroundStyle(palette.textPrimary)
                 Text(subtitle)
                     .font(.appSmall())
-                    .foregroundStyle(AppTheme.textSecondary)
+                    .foregroundStyle(palette.textSecondary)
             }
 
             Spacer()
@@ -155,12 +166,13 @@ struct TransactionRow: View {
                 .foregroundStyle(isIncome ? AppTheme.income : AppTheme.expense)
         }
         .padding(14)
-        .background(.white, in: RoundedRectangle(cornerRadius: 14))
-        .shadow(color: .black.opacity(0.04), radius: 6, y: 2)
+        .appCardSurface()
+        .shadow(color: .black.opacity(palette.shadowOpacity), radius: 6, y: 2)
     }
 }
 
 struct TagChip: View {
+    @Environment(\.themePalette) private var palette
     let tag: ExpenseTag
     let isSelected: Bool
     let action: () -> Void
@@ -176,9 +188,9 @@ struct TagChip: View {
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 10)
-            .foregroundStyle(isSelected ? .white : tag.color)
+            .foregroundStyle(isSelected ? .white : palette.textPrimary)
             .background(
-                isSelected ? AnyShapeStyle(tag.color) : AnyShapeStyle(tag.color.opacity(0.12)),
+                isSelected ? AnyShapeStyle(tag.color) : AnyShapeStyle(tag.color.opacity(0.14)),
                 in: Capsule()
             )
             .overlay(

@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct AddIncomeView: View {
+    @Environment(\.themePalette) private var palette
     @EnvironmentObject private var store: ExpenseStore
     @Environment(\.dismiss) private var dismiss
 
@@ -16,7 +17,7 @@ struct AddIncomeView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Amount Received")
                             .font(.appCaption())
-                            .foregroundStyle(AppTheme.textSecondary)
+                            .foregroundStyle(palette.textSecondary)
                         HStack(alignment: .firstTextBaseline, spacing: 4) {
                             Text(store.settings.currencySymbol)
                                 .font(.system(size: 48, weight: .bold))
@@ -36,6 +37,7 @@ struct AddIncomeView: View {
 
                     Text("Income Source")
                         .font(.appSubheadline())
+                        .foregroundStyle(palette.textPrimary)
 
                     FlowTagLayout(spacing: 10) {
                         ForEach(Array(store.tags(for: .income).enumerated()), id: \.element.id) { index, tag in
@@ -49,12 +51,11 @@ struct AddIncomeView: View {
                     }
 
                     TextField("e.g. May salary from Company", text: $note)
-                        .padding()
-                        .background(.white, in: RoundedRectangle(cornerRadius: 14))
+                        .appTextFieldSurface()
                 }
                 .padding(24)
             }
-            .background(AppTheme.background)
+            .background(palette.background)
             .navigationTitle("Add Income")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

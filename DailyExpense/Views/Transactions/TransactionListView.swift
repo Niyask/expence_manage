@@ -1,7 +1,9 @@
 import SwiftUI
 
 struct TransactionListView: View {
+    @Environment(\.themePalette) private var palette
     @EnvironmentObject private var store: ExpenseStore
+    @EnvironmentObject private var themeContext: ThemeContext
     @State private var sortByPrice = true
     @State private var transactionToEdit: Transaction?
     @State private var showDeleteConfirm = false
@@ -25,12 +27,15 @@ struct TransactionListView: View {
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
-        .background(AppTheme.background)
+        .background(palette.background)
         .navigationTitle("All Transactions")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(item: $transactionToEdit) { tx in
             EditTransactionView(transaction: tx)
                 .environmentObject(store)
+                .environmentObject(themeContext)
+                .themedScreen()
+                .appThemedRoot(appearance: store.settings.appearance)
         }
         .alert("Delete transaction?", isPresented: $showDeleteConfirm) {
             Button("Delete", role: .destructive) {
@@ -144,6 +149,7 @@ struct TransactionListView: View {
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(AppTheme.summaryGradient, in: RoundedRectangle(cornerRadius: 20))
+        .colorScheme(.dark)
     }
 
     private var retentionNotice: some View {
@@ -151,7 +157,7 @@ struct TransactionListView: View {
             Text("📦")
             Text("Only the last \(ExpenseStore.maxRetentionMonths) months are kept, organized week-by-week. Older entries are removed automatically.")
                 .font(.appSmall())
-                .foregroundStyle(AppTheme.textSecondary)
+                .foregroundStyle(palette.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding(12)
@@ -170,14 +176,15 @@ struct TransactionListView: View {
         VStack(spacing: 8) {
             Text("No transactions yet")
                 .font(.appSubheadline())
+                .foregroundStyle(palette.textPrimary)
             Text("Tap + on Home to add your first income or expense.")
                 .font(.appCaption())
-                .foregroundStyle(AppTheme.textSecondary)
+                .foregroundStyle(palette.textSecondary)
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
         .padding(32)
-        .background(.white, in: RoundedRectangle(cornerRadius: 16))
+        .appCardSurface(cornerRadius: 16)
     }
 
     @ViewBuilder
@@ -190,6 +197,7 @@ struct TransactionListView: View {
                         HStack {
                             Text(month.title)
                                 .font(.appSubheadline())
+                                .foregroundStyle(palette.textPrimary)
                             Spacer()
                             Text(store.settings.formatMoney(month.net, signed: true))
                                 .font(.appCaption())
@@ -202,26 +210,23 @@ struct TransactionListView: View {
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(week.label)
                                         .font(.appCaption())
+                                        .foregroundStyle(palette.textPrimary)
                                     Text("\(week.transactionCount) transactions")
                                         .font(.appSmall())
-                                        .foregroundStyle(AppTheme.textSecondary)
+                                        .foregroundStyle(palette.textSecondary)
                                 }
                                 Spacer()
-                                VStack(alignment: .trailing, spacing: 2) {
-                                    Text("+\(store.settings.formatMoney(week.income))")
-                                        .font(.appSmall())
-                                        .foregroundStyle(AppTheme.income)
-                                    Text("-\(store.settings.formatMoney(week.expense))")
-                                        .font(.appSmall())
-                                        .foregroundStyle(AppTheme.expense)
-                                }
+                                Text(store.settings.formatMoney(week.expense))
+                                    .font(.appCaption())
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(AppTheme.expense)
                             }
                             .padding(12)
-                            .background(AppTheme.background, in: RoundedRectangle(cornerRadius: 10))
+                            .background(palette.background, in: RoundedRectangle(cornerRadius: 10))
                         }
                     }
                     .padding(16)
-                    .background(.white, in: RoundedRectangle(cornerRadius: 16))
+                    .appCardSurface(cornerRadius: 16)
                     .listRowInsets(EdgeInsets(top: 6, leading: 24, bottom: 6, trailing: 24))
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.clear)
@@ -229,7 +234,7 @@ struct TransactionListView: View {
             } header: {
                 Text("History (last \(ExpenseStore.maxRetentionMonths) months)")
                     .font(.appHeadline())
-                    .foregroundStyle(AppTheme.textPrimary)
+                    .foregroundStyle(palette.textPrimary)
                     .textCase(nil)
             }
         }

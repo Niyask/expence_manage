@@ -1,7 +1,9 @@
 import SwiftUI
 
 struct HomeView: View {
+    @Environment(\.themePalette) private var palette
     @EnvironmentObject private var store: ExpenseStore
+    @EnvironmentObject private var themeContext: ThemeContext
     @Binding var showAddExpense: Bool
     @Binding var selectedTab: Int
     @State private var showAddIncome = false
@@ -18,11 +20,12 @@ struct HomeView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     SummaryCard(
                         greeting: greetingText,
-                        netBalance: store.netBalance(on: today),
-                        income: store.total(for: .income, on: today),
-                        expenses: store.total(for: .expense, on: today),
+                        netBalance: store.lifetimeNetBalance,
+                        income: store.lifetimeIncome,
+                        expenses: store.lifetimeExpenses,
                         currencySymbol: store.settings.currencyAmountPrefix,
-                        currencyLocaleIdentifier: store.settings.currencyLocaleIdentifier
+                        currencyLocaleIdentifier: store.settings.currencyLocaleIdentifier,
+                        weeklyExpenses: store.expenseTotalThisWeek(containing: today)
                     )
                     .appearOnLoad(delay: 0)
 
@@ -79,6 +82,7 @@ struct HomeView: View {
                     HStack {
                         Text("Recent Transactions")
                             .font(.appHeadline())
+                            .foregroundStyle(palette.textPrimary)
                         Spacer()
                         Button("See all") { showAllTransactions = true }
                             .font(.appCaption())
@@ -90,10 +94,10 @@ struct HomeView: View {
                     if recentTransactions.isEmpty {
                         Text("Your list starts empty. Add income or expenses to track from zero.")
                             .font(.appCaption())
-                            .foregroundStyle(AppTheme.textSecondary)
+                            .foregroundStyle(palette.textSecondary)
                             .padding()
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(.white, in: RoundedRectangle(cornerRadius: 14))
+                            .appCardSurface()
                     } else {
                         ForEach(Array(recentTransactions.enumerated()), id: \.element.id) { index, tx in
                             if let tag = store.tag(for: tx.tagId) {
@@ -130,15 +134,22 @@ struct HomeView: View {
                 .padding(.top, 8)
                 .padding(.bottom, 120)
             }
-            .background(AppTheme.background)
+            .background(palette.background)
             .navigationBarHidden(true)
             .sheet(isPresented: $showAddIncome) {
                 AddIncomeView()
+                    .environmentObject(store)
+                    .environmentObject(themeContext)
+                    .themedScreen()
+                    .appThemedRoot(appearance: store.settings.appearance)
             }
             .animation(AppAnimations.sheetSpring, value: showAddIncome)
             .sheet(item: $transactionToEdit) { tx in
                 EditTransactionView(transaction: tx)
                     .environmentObject(store)
+                    .environmentObject(themeContext)
+                    .themedScreen()
+                    .appThemedRoot(appearance: store.settings.appearance)
             }
             .animation(AppAnimations.sheetSpring, value: transactionToEdit?.id)
             .navigationDestination(isPresented: $showWeekly) {
@@ -161,9 +172,9 @@ struct HomeView: View {
                     .font(.appCaption())
                     .fontWeight(.semibold)
                     .foregroundStyle(AppTheme.primary)
-                Text("Income and expenses count from your first entry. Lifetime totals appear in See all.")
+                Text("Income and expenses add up from your first entry. Totals on Home are always cumulative; weekly breakdown is in Report.")
                     .font(.appSmall())
-                    .foregroundStyle(AppTheme.textSecondary)
+                    .foregroundStyle(palette.textSecondary)
             }
         }
         .padding(14)

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct RootView: View {
     @EnvironmentObject private var store: ExpenseStore
+    @EnvironmentObject private var themeContext: ThemeContext
 
     var body: some View {
         ZStack {
@@ -15,6 +16,9 @@ struct RootView: View {
                     .zIndex(0)
             }
         }
+        .themedScreen()
+        .appThemedRoot(appearance: store.settings.appearance)
+        .id(themeContext.revision)
         .animation(AppAnimations.cardSpring, value: store.settings.hasCompletedOnboarding)
         .sheet(
             isPresented: Binding(
@@ -32,6 +36,9 @@ struct RootView: View {
                         }
                 }
                 .environmentObject(store)
+                .environmentObject(themeContext)
+                .themedScreen()
+                .appThemedRoot(appearance: store.settings.appearance)
             }
         }
     }

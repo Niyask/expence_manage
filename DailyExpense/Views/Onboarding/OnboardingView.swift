@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct OnboardingView: View {
+    @Environment(\.themePalette) private var palette
     @EnvironmentObject private var store: ExpenseStore
     @State private var page = 0
     @State private var displayName = ""
@@ -52,12 +53,11 @@ struct OnboardingView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Your name (optional)")
                             .font(.appCaption())
-                            .foregroundStyle(AppTheme.textSecondary)
+                            .foregroundStyle(palette.textSecondary)
                         TextField("e.g. Niyas", text: $displayName)
                             .textContentType(.name)
                             .autocorrectionDisabled()
-                            .padding()
-                            .background(.white, in: RoundedRectangle(cornerRadius: 14))
+                            .appTextFieldSurface()
                     }
                     .padding(.horizontal, 24)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -70,7 +70,7 @@ struct OnboardingView: View {
                         }
                         .scalePressStyle()
                         .font(.appBody())
-                        .foregroundStyle(AppTheme.textSecondary)
+                        .foregroundStyle(palette.textSecondary)
                         .frame(maxWidth: .infinity)
                     }
 
@@ -96,14 +96,14 @@ struct OnboardingView: View {
                     }
                     .scalePressStyle()
                     .font(.appCaption())
-                    .foregroundStyle(AppTheme.textSecondary)
+                    .foregroundStyle(palette.textSecondary)
                 }
             }
             .padding(.bottom, 32)
             .padding(.top, 8)
             .animation(AppAnimations.cardSpring, value: page)
         }
-        .background(AppTheme.background)
+        .background(palette.background)
     }
 
     private func pageContent(_ item: OnboardingPage, index: Int) -> some View {
@@ -119,14 +119,14 @@ struct OnboardingView: View {
 
             Text(item.title)
                 .font(.appTitle())
-                .foregroundStyle(AppTheme.textPrimary)
+                .foregroundStyle(palette.textPrimary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 24)
                 .appearOnLoad(delay: AppAnimations.staggerDelay, isActive: page == index)
 
             Text(item.subtitle)
                 .font(.appBody())
-                .foregroundStyle(AppTheme.textSecondary)
+                .foregroundStyle(palette.textSecondary)
                 .multilineTextAlignment(.center)
                 .lineSpacing(4)
                 .padding(.horizontal, 32)
