@@ -1,67 +1,14 @@
-# Daily Expense builds (Firebase + TestFlight).
+# Daily Expense - TestFlight only (cloud Mac; works with old Xcode on your MacBook).
+# Setup: docs/BUILD_ON_YOUR_IPHONE.md
 workflows:
-  daily-expense-firebase:
-    name: Daily Expense -> Firebase
-    max_build_duration: 90
-    instance_type: mac_mini_m2
-
-    environment:
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.dailyexpense.app
-      vars:
-        XCODE_SCHEME: DailyExpense
-        BUNDLE_ID: com.dailyexpense.app
-      xcode: latest
-
-    integrations:
-      app_store_connect: Daily Expence
-
-    triggering:
-      events:
-        - push
-      branch_patterns:
-        - pattern: master
-          include: true
-
-    scripts:
-      - name: Install XcodeGen
-        script: brew install xcodegen
-
-      - name: Generate Xcode project
-        script: xcodegen generate
-
-      - name: Set up code signing settings on Xcode project
-        script: xcode-project use-profiles
-
-      - name: Build IPA for device install
-        script: |
-          xcode-project build-ipa \
-            --project "DailyExpense.xcodeproj" \
-            --scheme "$XCODE_SCHEME"
-
-    artifacts:
-      - build/ios/ipa/*.ipa
-      - /tmp/xcodebuild_logs/*.log
-
-    publishing:
-      email:
-        recipients:
-          - niyaspulath@gmail.com
-        notify:
-          success: true
-          failure: true
-      firebase:
-        firebase_token: "1//03Vw7r1-apcrJCgYIARAAGAMSNwF-L9IrRGi14EA5XmbYM0JDs7YBN3YFx_v1ff_Yl9VTKbF-mkqxFGjWtBTdvsix1t8cXMaIb_c"
-        ios:
-          app_id: "1:348319290522:ios:c5344f54c8f27d47017b23"
-          groups:
-            - testers
-
   daily-expense-testflight:
     name: Daily Expense - TestFlight
     max_build_duration: 90
-    instance_type: mac_mini_m2
+
+    # MUST match the App Store Connect integration name in Codemagic exactly.
+    # Codemagic -> Team/Personal settings -> Integrations -> Developer Portal -> key name
+    integrations:
+      app_store_connect: Daily Expense ASC
 
     environment:
       ios_signing:
@@ -72,8 +19,12 @@ workflows:
         XCODE_SCHEME: DailyExpense
       xcode: latest
 
-    integrations:
-      app_store_connect: DAILY_EXPENSE_ASC
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: master
+          include: true
 
     scripts:
       - name: Validate project and scheme
@@ -85,7 +36,7 @@ workflows:
             exit 1
           fi
           if [ ! -f "$CM_BUILD_DIR/$XCODE_PROJECT/xcshareddata/xcschemes/$XCODE_SCHEME.xcscheme" ]; then
-            echo "ERROR: Shared scheme missing. Expected xcshareddata/xcschemes/$XCODE_SCHEME.xcscheme"
+            echo "ERROR: Shared scheme missing."
             exit 1
           fi
           echo "OK: project and scheme found."
