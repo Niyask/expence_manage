@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		02AA042D82BFC4F169BD6C55 /* AddIncomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A642F384C3F265F08BCD2844 /* AddIncomeView.swift */; };
 		0A10DA91F69126BFC22EE0DF /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = E595135FF6E0214FA3EC4923 /* AppTheme.swift */; };
+		1A2B3C4D5E6F789012345678B /* ThemePalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F789012345678A /* ThemePalette.swift */; };
+		4A2B3C4D5E6F789012345678D /* AppAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2B3C4D5E6F789012345678C /* AppAppearance.swift */; };
 		196AC518381D74426B943FDC /* FinancialReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4F0025D716A25ADD08346D0 /* FinancialReportView.swift */; };
 		217C41242CE7F3CB26EBBF04 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A47C619AC9362B43A3F968 /* HomeView.swift */; };
 		2C7A5D46BADFD242868D872B /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = FA90FFF93B41BF3F7673457D /* PrivacyInfo.xcprivacy */; };
@@ -24,6 +26,7 @@
 		917B95160EC6CE25CE856173 /* NotificationScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F03A55F53C791857E2FC17A /* NotificationScheduler.swift */; };
 		92CC415220362F279FC3477C /* InputValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856653E361A2869E882A8E10 /* InputValidator.swift */; };
 		948164851328F38E8EA61094 /* ExpenseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B047353F862568CFE1264A /* ExpenseStore.swift */; };
+		5A2B3C4D5E6F789012345679F /* ExpenseStore+Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A2B3C4D5E6F789012345679E /* ExpenseStore+Settings.swift */; };
 		9883CFDEC1E76BCAC230F785 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431C6C0679EBCF5C892FB2D7 /* MainTabView.swift */; };
 		9DC80C7BA7D8748717764073 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87C393BF503F8AEF1E7821B8 /* OnboardingView.swift */; };
 		A416522C05E982B0181CC0A6 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95904D650E95BF88A278FF7B /* Transaction.swift */; };
@@ -48,6 +51,7 @@
 		431C6C0679EBCF5C892FB2D7 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		53BA67EBDFC1BC66E3145BA5 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		60B047353F862568CFE1264A /* ExpenseStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseStore.swift; sourceTree = "<group>"; };
+		5A2B3C4D5E6F789012345679E /* ExpenseStore+Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExpenseStore+Settings.swift"; sourceTree = "<group>"; };
 		6ADE455B9700F5FD7A05E513 /* AppCurrency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCurrency.swift; sourceTree = "<group>"; };
 		7F03A55F53C791857E2FC17A /* NotificationScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationScheduler.swift; sourceTree = "<group>"; };
 		856653E361A2869E882A8E10 /* InputValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputValidator.swift; sourceTree = "<group>"; };
@@ -61,6 +65,8 @@
 		DDBDE8A8A2263D6DEA300126 /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
 		DED8048CD14136A163A3F0B0 /* DailyExpenseApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyExpenseApp.swift; sourceTree = "<group>"; };
 		E595135FF6E0214FA3EC4923 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		1A2B3C4D5E6F789012345678A /* ThemePalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemePalette.swift; sourceTree = "<group>"; };
+		3A2B3C4D5E6F789012345678C /* AppAppearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAppearance.swift; sourceTree = "<group>"; };
 		FA90FFF93B41BF3F7673457D /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		FC7A318C76E5F08C64F2E8EA /* WeeklyInsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyInsightsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -79,6 +85,7 @@
 			children = (
 				2CDCB2E08CD68BB0EB4A527B /* AppNotificationHandler.swift */,
 				60B047353F862568CFE1264A /* ExpenseStore.swift */,
+				5A2B3C4D5E6F789012345679E /* ExpenseStore+Settings.swift */,
 				7F03A55F53C791857E2FC17A /* NotificationScheduler.swift */,
 				290E07B323E17C63D3238EFE /* PersistenceService.swift */,
 			);
@@ -139,7 +146,9 @@
 		87DC74F6EF8CBD2602B962B4 /* Theme */ = {
 			isa = PBXGroup;
 			children = (
+				3A2B3C4D5E6F789012345678C /* AppAppearance.swift */,
 				E595135FF6E0214FA3EC4923 /* AppTheme.swift */,
+				1A2B3C4D5E6F789012345678A /* ThemePalette.swift */,
 			);
 			path = Theme;
 			sourceTree = "<group>";
@@ -300,11 +309,14 @@
 				560F715DD4C482D3338BE8A4 /* AppAnimations.swift in Sources */,
 				5927C358D7E2FC8609506B9A /* AppCurrency.swift in Sources */,
 				2DAD536D38DDAA78B1B951B2 /* AppNotificationHandler.swift in Sources */,
+				4A2B3C4D5E6F789012345678D /* AppAppearance.swift in Sources */,
 				0A10DA91F69126BFC22EE0DF /* AppTheme.swift in Sources */,
+				1A2B3C4D5E6F789012345678B /* ThemePalette.swift in Sources */,
 				621AD6E955416A7777CF5C73 /* DailyExpenseApp.swift in Sources */,
 				B26FD702AB972C8893F79ADF /* EditTransactionView.swift in Sources */,
 				4501138CA5E2F81C4A25556D /* EveningReportView.swift in Sources */,
 				948164851328F38E8EA61094 /* ExpenseStore.swift in Sources */,
+				5A2B3C4D5E6F789012345679F /* ExpenseStore+Settings.swift in Sources */,
 				196AC518381D74426B943FDC /* FinancialReportView.swift in Sources */,
 				E418ED276A11092BC1F629AC /* Formatters.swift in Sources */,
 				217C41242CE7F3CB26EBBF04 /* HomeView.swift in Sources */,
