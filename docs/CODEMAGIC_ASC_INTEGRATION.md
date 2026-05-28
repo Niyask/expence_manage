@@ -1,78 +1,47 @@
-# Fix TestFlight publish error (invalid PEM / missing Key ID)
+# App Store Connect for Codemagic (optional auto-upload)
 
-Your **build succeeded**. Only **upload to App Store Connect** failed.
+## Recommended: use Transporter instead
 
-Log showed:
-- `key-id '$APP_STORE_CONNECT_KEY_IDENTIFIER'` → Key ID variable **not set** in Codemagic
-- `APP_STORE_CONNECT_PUBLISHER_PRIVATE_KEY` → **invalid PEM** (wrong paste of `.p8` file)
+If you see empty env var errors, use:
 
----
+**docs/UPLOAD_TESTFLIGHT_TRANSPORTER.md**
 
-## Add 4 variables in Codemagic
-
-**expense-tracker** app → **Environment variables** → add each (Secret = ON):
-
-| Variable | Value |
-|----------|--------|
-| `APP_STORE_CONNECT_KEY_IDENTIFIER` | Key ID from Apple (10 chars, e.g. `AB12CD34EF`) |
-| `APP_STORE_CONNECT_ISSUER_ID` | Issuer ID (UUID from Apple Keys page) |
-| `APP_STORE_CONNECT_PRIVATE_KEY` | Full `.p8` file text (see below) |
-| `APP_STORE_CONNECT_PUBLISHER_PRIVATE_KEY` | **Same** `.p8` text as row above |
-
-Items 3 and 4 must be **identical** content.
+Workflow: **Daily Expense - Build IPA** → download IPA → Transporter app.
 
 ---
 
-## Paste `.p8` correctly (Mac)
+## Optional: auto TestFlight upload
 
-In Terminal on your Mac:
+Workflow: **Daily Expense - TestFlight**
+
+### One-time: create integration in Codemagic
+
+1. [codemagic.io](https://codemagic.io) → profile → **Personal account settings**
+2. **Integrations** → **Developer Portal** (App Store Connect)
+3. **Connect** / **Add key**
+4. **API key name:** `codemagic`  ← must match yaml exactly
+5. **Issuer ID** + **Key ID** + upload **.p8** from App Store Connect
+6. Save
+
+### Apple: create API key
+
+App Store Connect → Users and Access → Integrations → App Store Connect API → **+**
+
+---
+
+## Env vars (only if you edit yaml to use api_key instead of integration)
+
+| Variable | Required |
+|----------|----------|
+| `APP_STORE_CONNECT_KEY_IDENTIFIER` | Key ID |
+| `APP_STORE_CONNECT_ISSUER_ID` | Issuer ID |
+| `APP_STORE_CONNECT_PRIVATE_KEY` | Full .p8 text |
+| `APP_STORE_CONNECT_PUBLISHER_PRIVATE_KEY` | Same .p8 text |
+
+Add on: app **expense-tracker** → **Environment variables** → Secret ON.
+
+Paste .p8 on Mac:
 
 ```bash
-pbcopy < ~/Downloads/AuthKey_XXXXXXXXXX.p8
+pbcopy < ~/Downloads/AuthKey_XXXXX.p8
 ```
-
-Then in Codemagic paste into the variable value field.
-
-Must look like:
-
-```
------BEGIN PRIVATE KEY-----
-MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQg...
-(many lines)
------END PRIVATE KEY-----
-```
-
-**Do not** add extra quotes. **Do not** paste as one long line without breaks.
-
----
-
-## Get Key ID and Issuer ID
-
-1. [App Store Connect](https://appstoreconnect.apple.com)
-2. **Users and Access** → **Integrations** → **App Store Connect API**
-3. **Issuer ID** = at top of page
-4. **Key ID** = in table for your key
-
----
-
-## Start build again
-
-Workflow: **Daily Expense - TestFlight** → branch **master**
-
-First step should print:
-
-```
-OK: APP_STORE_CONNECT_KEY_IDENTIFIER is set.
-OK: APP_STORE_CONNECT_ISSUER_ID is set.
-OK: API private key is valid PEM.
-```
-
----
-
-## If upload still fails
-
-Download **DailyExpense.ipa** from Codemagic **Artifacts** and upload with **Transporter** app (Mac App Store) using your Apple ID.
-
----
-
-Reference: [Codemagic App Store Connect publishing](https://docs.codemagic.io/yaml-publishing/app-store-connect/)
