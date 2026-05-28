@@ -12,6 +12,8 @@ workflows:
       vars:
         XCODE_SCHEME: DailyExpense
         BUNDLE_ID: com.dailyexpense.app
+        FIREBASE_TOKEN: "__SET_FIREBASE_TOKEN__"
+        FIREBASE_APP_ID: "__SET_FIREBASE_APP_ID__"
       xcode: latest
 
     integrations:
