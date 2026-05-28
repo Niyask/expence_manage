@@ -6,6 +6,8 @@ workflows:
     instance_type: mac_mini_m2
 
     environment:
+      groups:
+        - firebase_credentials
       ios_signing:
         distribution_type: development
         bundle_identifier: com.dailyexpense.app
