@@ -1,13 +1,9 @@
-# Daily Expense - TestFlight only.
-# One-time setup: Codemagic Integrations -> Developer Portal -> API key name: codemagic
-# See docs/CODEMAGIC_ASC_INTEGRATION.md
+# Daily Expense - TestFlight (no named Codemagic integration required).
+# Add 3 secrets on THIS APP in Codemagic: Environment variables (see docs/CODEMAGIC_ASC_INTEGRATION.md)
 workflows:
   daily-expense-testflight:
     name: Daily Expense - TestFlight
     max_build_duration: 90
-
-    integrations:
-      app_store_connect: codemagic
 
     environment:
       ios_signing:
@@ -63,7 +59,9 @@ workflows:
 
     publishing:
       app_store_connect:
-        auth: integration
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
         submit_to_testflight: true
       email:
         recipients:

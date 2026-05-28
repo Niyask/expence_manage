@@ -1,74 +1,71 @@
-# Codemagic + TestFlight setup (simple)
+# Fix: integration does not exist + missing env vars
 
-Your build failed because App Store Connect keys were not loaded.  
-Use **one integration in Codemagic** (no environment variable group needed).
+You do **NOT** need an integration named `codemagic` or `Daily Expense ASC`.
 
----
-
-## Step 1 — Create API key in Apple
-
-1. [App Store Connect](https://appstoreconnect.apple.com)
-2. **Users and Access** → **Integrations** → **App Store Connect API**
-3. **+** Generate key → Access: **App Manager**
-4. Download **.p8** file (once)
-5. Note **Issuer ID** (top of page) and **Key ID** (table)
+Add **3 variables on the app** in Codemagic (not a group name).
 
 ---
 
-## Step 2 — Add integration in Codemagic (important name)
+## Step 1 — Apple API key
 
-1. Open [codemagic.io](https://codemagic.io)
-2. Click your **profile** (top right) → **Personal account settings**  
-   (or **Team settings** if you use a team)
-3. **Integrations** tab
-4. Find **Developer Portal** (App Store Connect)
-5. Click **Connect** or **Add key**
-6. Fill in:
+1. [App Store Connect](https://appstoreconnect.apple.com) → **Users and Access** → **Integrations** → **App Store Connect API**
+2. **+** → access **App Manager** → generate
+3. Download **.p8** (once)
+4. Copy **Issuer ID** + **Key ID**
 
-| Field | Value |
-|-------|--------|
-| **API key name** | `codemagic` ← must be exactly this word |
-| **Issuer ID** | from Apple |
-| **Key ID** | from Apple |
-| **API key** | upload `.p8` file |
+---
 
-7. Click **Save**
+## Step 2 — Add variables on the APP (important)
 
-The name **`codemagic`** must match `codemagic.yaml`:
+1. [codemagic.io](https://codemagic.io) → open application **expense-tracker** (or Expense Tracker)
+2. Left menu: **Environment variables** (under this app, not only Team settings)
+3. Click **Add variable** three times:
 
-```yaml
-integrations:
-  app_store_connect: codemagic
+| Variable name | Value | Secret |
+|---------------|--------|--------|
+| `APP_STORE_CONNECT_PRIVATE_KEY` | Paste full `.p8` file text | Yes |
+| `APP_STORE_CONNECT_KEY_IDENTIFIER` | Key ID | Yes |
+| `APP_STORE_CONNECT_ISSUER_ID` | Issuer ID | Yes |
+
+4. **Save** each variable
+5. Do **not** require a group named `app_store_credentials` (removed from yaml)
+
+### .p8 paste format
+
+Must include lines like:
+
+```
+-----BEGIN PRIVATE KEY-----
+...
+-----END PRIVATE KEY-----
 ```
 
 ---
 
 ## Step 3 — Start build
 
-1. Open app **expense-tracker**
-2. **Start new build**
-3. Workflow: **Daily Expense - TestFlight**
-4. Branch: **master**
+1. **Start new build**
+2. Workflow: **Daily Expense - TestFlight**
+3. Branch: **master**
 
 ---
 
-## Errors
+## If you already added a Codemagic integration
 
-| Message | Fix |
-|---------|-----|
-| Integration `codemagic` does not exist | Repeat Step 2 — API key name must be `codemagic` |
-| Signing failed | Paid Apple Developer account + bundle `com.dailyexpense.app` in App Store Connect |
-| App not found in App Store Connect | Create app with bundle ID `com.dailyexpense.app` |
+That is fine — you can ignore it. This yaml does not use `integrations: app_store_connect` anymore.
 
 ---
 
-## You do NOT need
+## If build fails at signing or upload
 
-- `app_store_credentials` variable group
-- `APP_STORE_CONNECT_PRIVATE_KEY` env vars
-- Firebase
-- New Xcode on your old Mac
+| Error | Fix |
+|-------|-----|
+| Private key invalid | Re-paste full `.p8` content |
+| Bundle ID | Must be `com.dailyexpense.app` in Apple Developer + App Store Connect |
+| No app in App Store Connect | Create app with that bundle ID |
 
 ---
 
-Reference: [Codemagic App Store Connect publishing](https://docs.codemagic.io/yaml-publishing/app-store-connect/)
+## Optional: build IPA only (no TestFlight upload)
+
+If upload keeps failing, download `.ipa` from Codemagic **Artifacts** and upload with **Transporter** app on any Mac with your Apple ID.
