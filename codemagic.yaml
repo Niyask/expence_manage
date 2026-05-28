@@ -88,3 +88,65 @@ workflows:
           app_id: $FIREBASE_APP_ID
           groups:
             - testers
+
+  daily-expense-testflight:
+    name: Daily Expense - TestFlight
+    max_build_duration: 90
+
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.dailyexpense.app
+      vars:
+        XCODE_PROJECT: DailyExpense.xcodeproj
+        XCODE_SCHEME: DailyExpense
+      xcode: latest
+
+    scripts:
+      - name: Validate project and scheme
+        script: |
+          set -e
+          echo "Branch: $CM_BRANCH"
+          if [ ! -f "$CM_BUILD_DIR/$XCODE_PROJECT/project.pbxproj" ]; then
+            echo "ERROR: Xcode project not found."
+            exit 1
+          fi
+          if [ ! -f "$CM_BUILD_DIR/$XCODE_PROJECT/xcshareddata/xcschemes/$XCODE_SCHEME.xcscheme" ]; then
+            echo "ERROR: Shared scheme missing. Expected xcshareddata/xcschemes/$XCODE_SCHEME.xcscheme"
+            exit 1
+          fi
+          echo "OK: project and scheme found."
+
+      - name: Install XcodeGen and sync project
+        script: |
+          set -e
+          brew install xcodegen
+          xcodegen generate
+          test -f "$XCODE_PROJECT/xcshareddata/xcschemes/$XCODE_SCHEME.xcscheme"
+
+      - name: Set up code signing
+        script: |
+          set -e
+          xcode-project use-profiles
+
+      - name: Build IPA for TestFlight
+        script: |
+          set -e
+          xcode-project build-ipa \
+            --project "$CM_BUILD_DIR/$XCODE_PROJECT" \
+            --scheme "$XCODE_SCHEME"
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+      email:
+        recipients:
+          - niyaspulath@gmail.com
+        notify:
+          success: true
+          failure: true

@@ -100,3 +100,16 @@ OK: project and scheme found.
 ```
 
 If you see that, the YAML fix worked. Next failures are usually **Apple signing** (Part A step 3).
+
+---
+
+## Part E - Build for TestFlight
+
+Use this only if your Apple Developer account has App Store Connect access configured in Codemagic.
+
+1. Codemagic -> App settings -> Integrations -> connect **App Store Connect** (API key)
+2. Confirm bundle ID is `com.dailyexpense.app`
+3. Start new build -> workflow **Daily Expense - TestFlight**
+4. After success, open App Store Connect -> TestFlight -> select latest build
+
+If build fails with signing/publishing error, copy the first red error line and share it.
