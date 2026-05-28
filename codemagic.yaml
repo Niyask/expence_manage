@@ -7,7 +7,7 @@ workflows:
 
     environment:
       ios_signing:
-        distribution_type: development
+        distribution_type: app_store
         bundle_identifier: com.dailyexpense.app
       vars:
         XCODE_SCHEME: DailyExpense
