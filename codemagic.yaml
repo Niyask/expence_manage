@@ -1,11 +1,13 @@
 # Daily Expense - TestFlight only.
-# Add 3 secrets in Codemagic Environment variables (see docs/CODEMAGIC_ASC_INTEGRATION.md).
+# Create Codemagic variable group "app_store_credentials" with 3 secrets (see docs/CODEMAGIC_ASC_INTEGRATION.md).
 workflows:
   daily-expense-testflight:
     name: Daily Expense - TestFlight
     max_build_duration: 90
 
     environment:
+      groups:
+        - app_store_credentials
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.dailyexpense.app
@@ -25,15 +27,31 @@ workflows:
       - name: Check App Store Connect variables
         script: |
           set -e
-          missing=0
-          for v in APP_STORE_CONNECT_PRIVATE_KEY APP_STORE_CONNECT_KEY_IDENTIFIER APP_STORE_CONNECT_ISSUER_ID; do
-            if [ -z "${!v:-}" ]; then
-              echo "ERROR: Missing $v in Codemagic Environment variables (Secure)."
-              missing=1
-            fi
-          done
-          [ "$missing" -eq 0 ] || exit 1
-          echo "OK: App Store Connect variables present."
+          ERR=0
+          if [ -z "${APP_STORE_CONNECT_PRIVATE_KEY:-}" ]; then
+            echo "ERROR: APP_STORE_CONNECT_PRIVATE_KEY is missing."
+            ERR=1
+          else
+            echo "OK: APP_STORE_CONNECT_PRIVATE_KEY is set."
+          fi
+          if [ -z "${APP_STORE_CONNECT_KEY_IDENTIFIER:-}" ]; then
+            echo "ERROR: APP_STORE_CONNECT_KEY_IDENTIFIER is missing."
+            ERR=1
+          else
+            echo "OK: APP_STORE_CONNECT_KEY_IDENTIFIER is set."
+          fi
+          if [ -z "${APP_STORE_CONNECT_ISSUER_ID:-}" ]; then
+            echo "ERROR: APP_STORE_CONNECT_ISSUER_ID is missing."
+            ERR=1
+          else
+            echo "OK: APP_STORE_CONNECT_ISSUER_ID is set."
+          fi
+          if [ "$ERR" -ne 0 ]; then
+            echo ""
+            echo "Fix: Codemagic -> Environment variables -> group app_store_credentials"
+            echo "Add all 3 variables and enable the group for this workflow."
+            exit 1
+          fi
 
       - name: Validate project and scheme
         script: |

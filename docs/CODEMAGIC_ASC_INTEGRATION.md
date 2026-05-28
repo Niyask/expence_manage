@@ -20,11 +20,15 @@ Add **3 environment variables** in Codemagic instead.
 
 ---
 
-## Step 2 — Add 3 variables in Codemagic
+## Step 2 — Add 3 variables in Codemagic (required)
 
-Codemagic → your app **expense-tracker** → **Environment variables**
+1. Codemagic → **Teams** (or Personal account) → **Environment variables**
+2. Create a **group** named exactly: **`app_store_credentials`**
+3. Inside that group, add these 3 variables (turn **Secure** ON for all):
 
-Add each one. Turn **Secure** ON for all three.
+Or: app **expense-tracker** → Environment variables → same group name **`app_store_credentials`**
+
+**Important:** The group name must be `app_store_credentials` (matches `codemagic.yaml`).
 
 | Variable name | What to paste |
 |---------------|----------------|
