@@ -1,5 +1,5 @@
-# Daily Expense - TestFlight (no named Codemagic integration required).
-# Add 3 secrets on THIS APP in Codemagic: Environment variables (see docs/CODEMAGIC_ASC_INTEGRATION.md)
+# Daily Expense - TestFlight only.
+# Set 4 secrets on app Environment variables: docs/CODEMAGIC_ASC_INTEGRATION.md
 workflows:
   daily-expense-testflight:
     name: Daily Expense - TestFlight
@@ -22,6 +22,35 @@ workflows:
           include: true
 
     scripts:
+      - name: Verify App Store Connect credentials
+        script: |
+          set -e
+          MISSING=0
+          for name in APP_STORE_CONNECT_KEY_IDENTIFIER APP_STORE_CONNECT_ISSUER_ID; do
+            eval "val=\$$name"
+            if [ -z "$val" ]; then
+              echo "ERROR: $name is empty. Add it in Codemagic -> app -> Environment variables."
+              MISSING=1
+            else
+              echo "OK: $name is set."
+            fi
+          done
+          KEY="${APP_STORE_CONNECT_PUBLISHER_PRIVATE_KEY:-${APP_STORE_CONNECT_PRIVATE_KEY:-}}"
+          if [ -z "$KEY" ]; then
+            echo "ERROR: Set APP_STORE_CONNECT_PRIVATE_KEY (and optionally APP_STORE_CONNECT_PUBLISHER_PRIVATE_KEY with same .p8 text)."
+            MISSING=1
+          else
+            printf '%s\n' "$KEY" | sed 's/\\n/\n/g' > /tmp/asc_api_key.pem
+            if openssl pkey -in /tmp/asc_api_key.pem -check -noout 2>/dev/null; then
+              echo "OK: API private key is valid PEM."
+            else
+              echo "ERROR: API private key is not valid PEM."
+              echo "Re-paste the .p8 file from Apple (include BEGIN/END lines, all line breaks)."
+              MISSING=1
+            fi
+          fi
+          [ "$MISSING" -eq 0 ] || exit 1
+
       - name: Validate project and scheme
         script: |
           set -e
