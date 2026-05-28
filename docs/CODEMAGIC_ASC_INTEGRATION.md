@@ -1,59 +1,92 @@
-# Fix: App Store Connect integration does not exist
+# What to use for TestFlight (no integration name needed)
 
-Codemagic shows:
+You do **not** need an integration named `Daily Expense ASC` anymore.
 
-`App Store Connect integration "DAILY_EXPENSE_ASC" does not exist`
-
-That name came from **`codemagic.yaml`** in your repo (not from Firebase).
+Add **3 environment variables** in Codemagic instead.
 
 ---
 
-## Fix in 2 minutes
+## Step 1 — Create API key in Apple (one time)
 
-### Option A — Create integration with the name in yaml (easiest)
-
-1. Codemagic → **Personal account** or **Team settings** → **Integrations**
-2. **Developer Portal** (App Store Connect) → **Add key** / **Connect**
-3. When asked for **API key name**, type exactly:
-
-   **`Daily Expense ASC`**
-
-   (same spelling as in `codemagic.yaml`)
-
-4. Paste **Issuer ID**, **Key ID**, upload **.p8** from App Store Connect
-5. Save
-6. Start build → **Daily Expense - TestFlight**
-
-### Option B — Use your existing integration name
-
-If you already added a key with another name (e.g. `Daily Expence`):
-
-1. Open `codemagic.yaml`
-2. Change this line to your **exact** Codemagic integration name:
-
-   ```yaml
-   app_store_connect: Your Exact Name Here
-   ```
-
-3. Commit/push or paste updated yaml in Codemagic
-4. Start build again
+1. Open [App Store Connect](https://appstoreconnect.apple.com)
+2. **Users and Access** → **Integrations** → **App Store Connect API**
+3. Click **+** to generate a key
+4. Name: `Codemagic` (any name is fine on Apple side)
+5. Access: **App Manager** (or Admin)
+6. **Download** the `.p8` file (only once)
+7. Copy:
+   - **Issuer ID** (top of the Keys page)
+   - **Key ID** (in the table for your key)
 
 ---
 
-## Where the name is set
+## Step 2 — Add 3 variables in Codemagic
 
-Only here in the repo:
+Codemagic → your app **expense-tracker** → **Environment variables**
+
+Add each one. Turn **Secure** ON for all three.
+
+| Variable name | What to paste |
+|---------------|----------------|
+| `APP_STORE_CONNECT_PRIVATE_KEY` | Open the `.p8` file in TextEdit — paste **all** text including `-----BEGIN PRIVATE KEY-----` lines |
+| `APP_STORE_CONNECT_KEY_IDENTIFIER` | Key ID (e.g. `AB12CD34EF`) |
+| `APP_STORE_CONNECT_ISSUER_ID` | Issuer ID (e.g. `12345678-abcd-...`) |
+
+Save.
+
+---
+
+## Step 3 — Start build
+
+1. **Start new build**
+2. Workflow: **Daily Expense - TestFlight**
+3. Branch: **master**
+
+Build log should show: `OK: App Store Connect variables present.`
+
+---
+
+## Still need Apple signing
+
+`distribution_type: app_store` uses your Apple Developer account via the same API key during the build.
+
+Requirements:
+
+- Paid **Apple Developer Program** ($99/year)
+- App **com.dailyexpense.app** created in App Store Connect
+- Bundle ID registered in [developer.apple.com](https://developer.apple.com/account)
+
+---
+
+## Optional: use Codemagic UI integration instead
+
+If you prefer the UI integration (no 3 env vars):
+
+1. Codemagic → **Integrations** → **Developer Portal** → **Add key**
+2. Pick any name you like (e.g. `My Apple Key`)
+3. In `codemagic.yaml` use:
 
 ```yaml
 integrations:
-  app_store_connect: Daily Expense ASC
+  app_store_connect: My Apple Key
+
+publishing:
+  app_store_connect:
+    auth: integration
+    submit_to_testflight: true
 ```
 
-Codemagic does **not** invent `DAILY_EXPENSE_ASC` — it was in an older version of your yaml file.
+Names must match **exactly**. The env-var method avoids that problem.
 
 ---
 
-## TestFlight only
+## Troubleshooting
 
-This project uses **one** workflow: **Daily Expense - TestFlight**.  
-No Firebase workflow in `codemagic.yaml`.
+| Error | Fix |
+|-------|-----|
+| Integration does not exist | Use env vars (this guide) — no integration name |
+| Missing `APP_STORE_CONNECT_*` | Add all 3 variables in Codemagic |
+| Signing failed | Confirm paid developer account + bundle ID |
+| Upload failed | Check API key has App Manager access |
+
+Reference: [Codemagic App Store Connect publishing](https://docs.codemagic.io/yaml-publishing/app-store-connect/)

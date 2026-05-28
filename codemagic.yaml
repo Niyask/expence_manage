@@ -1,14 +1,9 @@
-# Daily Expense - TestFlight only (cloud Mac; works with old Xcode on your MacBook).
-# Setup: docs/BUILD_ON_YOUR_IPHONE.md
+# Daily Expense - TestFlight only.
+# Add 3 secrets in Codemagic Environment variables (see docs/CODEMAGIC_ASC_INTEGRATION.md).
 workflows:
   daily-expense-testflight:
     name: Daily Expense - TestFlight
     max_build_duration: 90
-
-    # MUST match the App Store Connect integration name in Codemagic exactly.
-    # Codemagic -> Team/Personal settings -> Integrations -> Developer Portal -> key name
-    integrations:
-      app_store_connect: Daily Expense ASC
 
     environment:
       ios_signing:
@@ -27,10 +22,22 @@ workflows:
           include: true
 
     scripts:
+      - name: Check App Store Connect variables
+        script: |
+          set -e
+          missing=0
+          for v in APP_STORE_CONNECT_PRIVATE_KEY APP_STORE_CONNECT_KEY_IDENTIFIER APP_STORE_CONNECT_ISSUER_ID; do
+            if [ -z "${!v:-}" ]; then
+              echo "ERROR: Missing $v in Codemagic Environment variables (Secure)."
+              missing=1
+            fi
+          done
+          [ "$missing" -eq 0 ] || exit 1
+          echo "OK: App Store Connect variables present."
+
       - name: Validate project and scheme
         script: |
           set -e
-          echo "Branch: $CM_BRANCH"
           if [ ! -f "$CM_BUILD_DIR/$XCODE_PROJECT/project.pbxproj" ]; then
             echo "ERROR: Xcode project not found."
             exit 1
@@ -46,7 +53,6 @@ workflows:
           set -e
           brew install xcodegen
           xcodegen generate
-          test -f "$XCODE_PROJECT/xcshareddata/xcschemes/$XCODE_SCHEME.xcscheme"
 
       - name: Set up code signing
         script: |
@@ -66,7 +72,9 @@ workflows:
 
     publishing:
       app_store_connect:
-        auth: integration
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
         submit_to_testflight: true
       email:
         recipients:
