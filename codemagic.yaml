@@ -15,7 +15,7 @@ workflows:
       xcode: latest
 
     integrations:
-      app_store_connect: DAILY_EXPENSE_ASC
+      app_store_connect: Daily Expence
 
     triggering:
       events:
