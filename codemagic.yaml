@@ -1,13 +1,15 @@
 # Daily Expense - TestFlight only.
-# Create Codemagic variable group "app_store_credentials" with 3 secrets (see docs/CODEMAGIC_ASC_INTEGRATION.md).
+# One-time setup: Codemagic Integrations -> Developer Portal -> API key name: codemagic
+# See docs/CODEMAGIC_ASC_INTEGRATION.md
 workflows:
   daily-expense-testflight:
     name: Daily Expense - TestFlight
     max_build_duration: 90
 
+    integrations:
+      app_store_connect: codemagic
+
     environment:
-      groups:
-        - app_store_credentials
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.dailyexpense.app
@@ -24,35 +26,6 @@ workflows:
           include: true
 
     scripts:
-      - name: Check App Store Connect variables
-        script: |
-          set -e
-          ERR=0
-          if [ -z "${APP_STORE_CONNECT_PRIVATE_KEY:-}" ]; then
-            echo "ERROR: APP_STORE_CONNECT_PRIVATE_KEY is missing."
-            ERR=1
-          else
-            echo "OK: APP_STORE_CONNECT_PRIVATE_KEY is set."
-          fi
-          if [ -z "${APP_STORE_CONNECT_KEY_IDENTIFIER:-}" ]; then
-            echo "ERROR: APP_STORE_CONNECT_KEY_IDENTIFIER is missing."
-            ERR=1
-          else
-            echo "OK: APP_STORE_CONNECT_KEY_IDENTIFIER is set."
-          fi
-          if [ -z "${APP_STORE_CONNECT_ISSUER_ID:-}" ]; then
-            echo "ERROR: APP_STORE_CONNECT_ISSUER_ID is missing."
-            ERR=1
-          else
-            echo "OK: APP_STORE_CONNECT_ISSUER_ID is set."
-          fi
-          if [ "$ERR" -ne 0 ]; then
-            echo ""
-            echo "Fix: Codemagic -> Environment variables -> group app_store_credentials"
-            echo "Add all 3 variables and enable the group for this workflow."
-            exit 1
-          fi
-
       - name: Validate project and scheme
         script: |
           set -e
@@ -90,9 +63,7 @@ workflows:
 
     publishing:
       app_store_connect:
-        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
-        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        auth: integration
         submit_to_testflight: true
       email:
         recipients:
