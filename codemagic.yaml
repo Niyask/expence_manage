@@ -7,14 +7,15 @@ workflows:
 
     environment:
       ios_signing:
-        distribution_type: development
+        distribution_type: ad_hoc
         bundle_identifier: com.dailyexpense.app
       vars:
         XCODE_SCHEME: DailyExpense
         BUNDLE_ID: com.dailyexpense.app
-        FIREBASE_TOKEN: "1//03Vw7r1-apcrJCgYIARAAGAMSNwF-L9IrRGi14EA5XmbYM0JDs7YBN3YFx_v1ff_Yl9VTKbF-mkqxFGjWtBTdvsix1t8cXMaIb_c"
-        FIREBASE_APP_ID: "1:348319290522:ios:c5344f54c8f27d47017b23"
       xcode: latest
+
+    integrations:
+      app_store_connect: DAILY_EXPENSE_ASC
 
     triggering:
       events:
