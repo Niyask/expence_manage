@@ -220,7 +220,7 @@ struct SettingsView: View {
     private var replayOnboardingButton: some View {
         Button {
             withAnimation(AppAnimations.cardSpring) {
-                store.settings.hasCompletedOnboarding = false
+                store.resetOnboarding()
             }
         } label: {
             HStack(spacing: 12) {

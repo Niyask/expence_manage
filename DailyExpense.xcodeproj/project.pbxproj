@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -40,7 +40,7 @@
 		11A47C619AC9362B43A3F968 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		290E07B323E17C63D3238EFE /* PersistenceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceService.swift; sourceTree = "<group>"; };
 		2CDCB2E08CD68BB0EB4A527B /* AppNotificationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppNotificationHandler.swift; sourceTree = "<group>"; };
-		329F16A15193F8A40972F413 /* DailyExpense.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DailyExpense.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		329F16A15193F8A40972F413 /* DailyExpense.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DailyExpense.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		34D0BCD249FA4AD3A0B0883C /* TransactionListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionListView.swift; sourceTree = "<group>"; };
 		350C25D9FD0D99611EF5204E /* AppAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAnimations.swift; sourceTree = "<group>"; };
 		36324A198695E84F2464C54F /* SharedComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedComponents.swift; sourceTree = "<group>"; };
@@ -61,7 +61,7 @@
 		DDBDE8A8A2263D6DEA300126 /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
 		DED8048CD14136A163A3F0B0 /* DailyExpenseApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyExpenseApp.swift; sourceTree = "<group>"; };
 		E595135FF6E0214FA3EC4923 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
-		FA90FFF93B41BF3F7673457D /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		FA90FFF93B41BF3F7673457D /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		FC7A318C76E5F08C64F2E8EA /* WeeklyInsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyInsightsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 

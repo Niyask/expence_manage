@@ -21,8 +21,12 @@ if [[ -z "${FIREBASE_APP_ID:-}" ]]; then
   exit 1
 fi
 
-if ! command -v firebase &>/dev/null; then
-  echo "Install Firebase CLI: npm install -g firebase-tools"
+if command -v firebase &>/dev/null; then
+  FIREBASE_CMD=(firebase)
+elif command -v npx &>/dev/null; then
+  FIREBASE_CMD=(npx firebase-tools@latest)
+else
+  echo "Install Node.js from https://nodejs.org then run: npx firebase-tools@latest login"
   exit 1
 fi
 
@@ -35,7 +39,7 @@ GROUP="${FIREBASE_TESTER_GROUP:-testers}"
 NOTES="${RELEASE_NOTES:-Daily Expense build $(date '+%Y-%m-%d %H:%M')}"
 
 echo "→ Uploading $IPA to Firebase App Distribution…"
-firebase appdistribution:distribute "$IPA" \
+"${FIREBASE_CMD[@]}" appdistribution:distribute "$IPA" \
   --app "$FIREBASE_APP_ID" \
   --groups "$GROUP" \
   --release-notes "$NOTES"

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Prints your Firebase values for Codemagic (safe to share project/app id).
+set -euo pipefail
+
+echo ""
+echo "════════════════════════════════════════════════════════"
+echo "  Daily Expense — paste into Codemagic"
+echo "════════════════════════════════════════════════════════"
+echo ""
+echo "  FIREBASE_APP_ID (copy all one line):"
+echo ""
+echo "  1:348319290522:ios:c5344f54c8f27d47017b23"
+echo ""
+echo "────────────────────────────────────────────────────────"
+echo "  FIREBASE_TOKEN — run this, then copy token from Terminal:"
+echo ""
+echo "  npx firebase-tools@latest login:ci"
+echo ""
+echo "────────────────────────────────────────────────────────"
+echo "  Then open: https://codemagic.io"
+echo "  Sign up with Bitbucket → expense-tracker → Start build"
+echo ""
+echo "  Full steps: docs/DO_THIS_NOW.md"
+echo "════════════════════════════════════════════════════════"
+echo ""

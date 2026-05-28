@@ -22,16 +22,11 @@
 4. Copy **App ID** (example: `1:1234567890:ios:abc123...`) → save as `FIREBASE_APP_ID`
 5. Left menu → **App Distribution** → **Get started**
 6. **Testers & Groups** → create group **`testers`** → add **`niyaspulath@gmail.com`**
-7. Terminal (any PC/Mac):
+7. Terminal (on your Mac — no global install needed):
    ```bash
-   npm install -g firebase-tools
-   firebase login
+   npx firebase-tools@latest login:ci
    ```
-   Use **niyaspulath@gmail.com** when Google asks.
-   ```bash
-   firebase login:ci
-   ```
-   Copy the **token** → this is `FIREBASE_TOKEN` for Codemagic.
+   Use **niyaspulath@gmail.com** in the browser. Copy the **token** → `FIREBASE_TOKEN` in Codemagic.
 
 8. In project folder:
    ```bash

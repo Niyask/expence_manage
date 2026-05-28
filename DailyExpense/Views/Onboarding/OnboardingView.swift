@@ -122,7 +122,7 @@ struct OnboardingView: View {
                 .foregroundStyle(AppTheme.textPrimary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 24)
-                .appearOnLoad(delay: AppAnimations.staggerDelay)
+                .appearOnLoad(delay: AppAnimations.staggerDelay, isActive: page == index)
 
             Text(item.subtitle)
                 .font(.appBody())
@@ -130,7 +130,7 @@ struct OnboardingView: View {
                 .multilineTextAlignment(.center)
                 .lineSpacing(4)
                 .padding(.horizontal, 32)
-                .appearOnLoad(delay: AppAnimations.staggerDelay * 2)
+                .appearOnLoad(delay: AppAnimations.staggerDelay * 2, isActive: page == index)
 
             if index == 2 {
                 retentionBadge
