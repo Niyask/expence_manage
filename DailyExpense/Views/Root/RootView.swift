@@ -16,7 +16,7 @@ struct RootView: View {
                     .zIndex(0)
             }
         }
-        .themedScreen()
+        .themedScreen(themeContext: themeContext)
         .appThemedRoot(appearance: store.settings.appearance)
         .id(themeContext.revision)
         .animation(AppAnimations.cardSpring, value: store.settings.hasCompletedOnboarding)
@@ -37,7 +37,7 @@ struct RootView: View {
                 }
                 .environmentObject(store)
                 .environmentObject(themeContext)
-                .themedScreen()
+                .themedScreen(themeContext: themeContext)
                 .appThemedRoot(appearance: store.settings.appearance)
             }
         }

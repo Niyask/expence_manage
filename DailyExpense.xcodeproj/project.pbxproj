@@ -26,10 +26,13 @@
 		948164851328F38E8EA61094 /* ExpenseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B047353F862568CFE1264A /* ExpenseStore.swift */; };
 		9883CFDEC1E76BCAC230F785 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431C6C0679EBCF5C892FB2D7 /* MainTabView.swift */; };
 		9DC80C7BA7D8748717764073 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87C393BF503F8AEF1E7821B8 /* OnboardingView.swift */; };
+		A3B4C5D6E7F8899001122334 /* ExpenseStore+Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A3B4C5D6E7788990011223 /* ExpenseStore+Settings.swift */; };
 		A416522C05E982B0181CC0A6 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95904D650E95BF88A278FF7B /* Transaction.swift */; };
 		A629DA6314F3D2303BF0548E /* AddExpenseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC37EF57E9F925AD6C1263AC /* AddExpenseView.swift */; };
 		AEF63918AC22882E07432C2B /* TransactionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D0BCD249FA4AD3A0B0883C /* TransactionListView.swift */; };
 		B26FD702AB972C8893F79ADF /* EditTransactionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9DEC86EF2D74B424E5E0FEC /* EditTransactionView.swift */; };
+		C9D0E1F2A3B4455667788990 /* AppAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8C9D0E1F2A3344556677889 /* AppAppearance.swift */; };
+		E1F2A3B4C5D6677889900112 /* ThemePalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0E1F2A3B4C5566778899001 /* ThemePalette.swift */; };
 		E418ED276A11092BC1F629AC /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBDE8A8A2263D6DEA300126 /* Formatters.swift */; };
 		EAC8B465C9149DFBE8CFCF2B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02C19B14F339EEE4E4B53E4C /* Assets.xcassets */; };
 		F19D4DCEA069E0F8A1F9ECDA /* PersistenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290E07B323E17C63D3238EFE /* PersistenceService.swift */; };
@@ -56,11 +59,14 @@
 		9AE57479E486594304BB1ABC /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A4F0025D716A25ADD08346D0 /* FinancialReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinancialReportView.swift; sourceTree = "<group>"; };
 		A642F384C3F265F08BCD2844 /* AddIncomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddIncomeView.swift; sourceTree = "<group>"; };
+		B8C9D0E1F2A3344556677889 /* AppAppearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAppearance.swift; sourceTree = "<group>"; };
 		BC37EF57E9F925AD6C1263AC /* AddExpenseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddExpenseView.swift; sourceTree = "<group>"; };
 		C9DEC86EF2D74B424E5E0FEC /* EditTransactionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTransactionView.swift; sourceTree = "<group>"; };
+		D0E1F2A3B4C5566778899001 /* ThemePalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemePalette.swift; sourceTree = "<group>"; };
 		DDBDE8A8A2263D6DEA300126 /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
 		DED8048CD14136A163A3F0B0 /* DailyExpenseApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyExpenseApp.swift; sourceTree = "<group>"; };
 		E595135FF6E0214FA3EC4923 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		F2A3B4C5D6E7788990011223 /* ExpenseStore+Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExpenseStore+Settings.swift"; sourceTree = "<group>"; };
 		FA90FFF93B41BF3F7673457D /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		FC7A318C76E5F08C64F2E8EA /* WeeklyInsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyInsightsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -79,6 +85,7 @@
 			children = (
 				2CDCB2E08CD68BB0EB4A527B /* AppNotificationHandler.swift */,
 				60B047353F862568CFE1264A /* ExpenseStore.swift */,
+				F2A3B4C5D6E7788990011223 /* ExpenseStore+Settings.swift */,
 				7F03A55F53C791857E2FC17A /* NotificationScheduler.swift */,
 				290E07B323E17C63D3238EFE /* PersistenceService.swift */,
 			);
@@ -139,7 +146,9 @@
 		87DC74F6EF8CBD2602B962B4 /* Theme */ = {
 			isa = PBXGroup;
 			children = (
+				B8C9D0E1F2A3344556677889 /* AppAppearance.swift */,
 				E595135FF6E0214FA3EC4923 /* AppTheme.swift */,
+				D0E1F2A3B4C5566778899001 /* ThemePalette.swift */,
 			);
 			path = Theme;
 			sourceTree = "<group>";
@@ -253,7 +262,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 2650;
 				TargetAttributes = {
 					0A53D592934E8AACE8430CD9 = {
 						DevelopmentTeam = 92VCTKP3LK;
@@ -297,14 +306,17 @@
 			files = (
 				A629DA6314F3D2303BF0548E /* AddExpenseView.swift in Sources */,
 				02AA042D82BFC4F169BD6C55 /* AddIncomeView.swift in Sources */,
+				C9D0E1F2A3B4455667788990 /* AppAppearance.swift in Sources */,
 				560F715DD4C482D3338BE8A4 /* AppAnimations.swift in Sources */,
 				5927C358D7E2FC8609506B9A /* AppCurrency.swift in Sources */,
 				2DAD536D38DDAA78B1B951B2 /* AppNotificationHandler.swift in Sources */,
 				0A10DA91F69126BFC22EE0DF /* AppTheme.swift in Sources */,
+				E1F2A3B4C5D6677889900112 /* ThemePalette.swift in Sources */,
 				621AD6E955416A7777CF5C73 /* DailyExpenseApp.swift in Sources */,
 				B26FD702AB972C8893F79ADF /* EditTransactionView.swift in Sources */,
 				4501138CA5E2F81C4A25556D /* EveningReportView.swift in Sources */,
 				948164851328F38E8EA61094 /* ExpenseStore.swift in Sources */,
+				A3B4C5D6E7F8899001122334 /* ExpenseStore+Settings.swift in Sources */,
 				196AC518381D74426B943FDC /* FinancialReportView.swift in Sources */,
 				E418ED276A11092BC1F629AC /* Formatters.swift in Sources */,
 				217C41242CE7F3CB26EBBF04 /* HomeView.swift in Sources */,
@@ -332,7 +344,6 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 92VCTKP3LK;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Daily Expense";
@@ -359,7 +370,6 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 92VCTKP3LK;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Daily Expense";
@@ -414,6 +424,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 92VCTKP3LK;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -436,6 +447,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.7;
@@ -477,6 +489,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 92VCTKP3LK;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -492,6 +505,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.7;
