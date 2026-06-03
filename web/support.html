@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Daily Expense support — help, FAQs, and contact for the iOS expense tracker.">
+  <title>Support — Daily Expense</title>
+  <link rel="stylesheet" href="css/theme.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="index.html">
+        <span class="brand-icon" aria-hidden="true">💰</span>
+        Daily Expense
+      </a>
+      <nav class="nav-links" aria-label="Site">
+        <a href="index.html">Home</a>
+        <a href="support.html" class="active">Support</a>
+        <a href="privacy.html">Privacy</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero hero-evening">
+      <p class="eyebrow">We're here to help</p>
+      <h1>Support</h1>
+      <p>Answers for Daily Expense on iPhone — setup, notifications, data, and troubleshooting.</p>
+    </section>
+
+    <section class="card">
+      <h2>Contact</h2>
+      <p>For bugs, feature requests, or account questions (there is no login in v1.0), email us:</p>
+      <div class="contact-box">
+        <p style="margin:0;"><strong>Email:</strong> <a href="mailto:niyasmuhammed1991@gmail.com">niyasmuhammed1991@gmail.com</a></p>
+        <p style="margin:8px 0 0;font-size:12px;">Replace this address with your real support email before going live.</p>
+      </div>
+      <p style="margin-top:16px;">We aim to respond within <strong>2–3 business days</strong>.</p>
+    </section>
+
+    <section class="card">
+      <h2>Getting started</h2>
+      <ol>
+        <li>Install <strong>Daily Expense</strong> from the App Store (iOS 17+).</li>
+        <li>Complete the <strong>onboarding</strong> screens (optional name for your greeting).</li>
+        <li>Tap <strong>+</strong> to add an expense, or use <strong>Add Income</strong> on Home for salary and other credits.</li>
+        <li>Open <strong>Settings</strong> to set currency, light/dark appearance, and bedtime reminder time.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>Frequently asked questions</h2>
+      <dl class="faq">
+        <dt>Is my data stored in the cloud?</dt>
+        <dd>No. Transactions and settings are saved only on your device. See our <a href="privacy.html">Privacy Policy</a>.</dd>
+
+        <dt>Will App Store updates delete my data?</dt>
+        <dd>Yes, when you update Daily Expense from the App Store over your existing install. Data is only lost if you delete the app from your iPhone (unless you restore from a backup).</dd>
+
+        <dt>How long is history kept?</dt>
+        <dd>Up to <strong>2 months</strong> of transactions. Older entries are removed automatically.</dd>
+
+        <dt>Bedtime notifications are not appearing</dt>
+        <dd>
+          <ol>
+            <li>In the app: <strong>Settings → Bedtime Reminder</strong> — turn notifications on.</li>
+            <li>Allow notifications when iOS prompts you.</li>
+            <li>On iPhone: <strong>Settings → Notifications → Daily Expense</strong> — ensure Allow Notifications is on.</li>
+            <li>Test on a real device; the simulator may not behave like a phone.</li>
+          </ol>
+        </dd>
+
+        <dt>How do I edit or delete a transaction?</dt>
+        <dd>Use <strong>All Transactions</strong> from Home, or long-press / tap a recent item on Home. Swipe or open the edit sheet to change amount, tag, note, or date.</dd>
+
+        <dt>What do weekly insights mean?</dt>
+        <dd>The app shows your top expense category for the selected week and compares spending to the previous week when the same category leads both weeks.</dd>
+
+        <dt>Export or backup to iCloud?</dt>
+        <dd>Export and cloud backup are planned; v1.0 stores data locally only. You can rely on an encrypted iPhone backup via iCloud or Finder.</dd>
+
+        <dt>Supported devices</dt>
+        <dd>iPhone running <strong>iOS 17.0</strong> or later. iPad is not a primary target unless you enable universal support in Xcode.</dd>
+      </dl>
+    </section>
+
+    <section class="card">
+      <h2>Report a problem</h2>
+      <p>When contacting support, please include:</p>
+      <ul>
+        <li>iPhone model and iOS version (Settings → General → About)</li>
+        <li>App version (Settings → Daily Expense at bottom of in-app Settings)</li>
+        <li>Steps to reproduce the issue</li>
+        <li>Screenshots if possible (no need to send financial amounts)</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Related links</h2>
+      <ul>
+        <li><a href="index.html">App overview (Marketing)</a></li>
+        <li><a href="privacy.html">Privacy Policy</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <nav>
+      <a href="index.html">Marketing</a>
+      <a href="support.html">Support</a>
+      <a href="privacy.html">Privacy Policy</a>
+    </nav>
+    <p>© <span id="year"></span> Daily Expense · Support</p>
+  </footer>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
