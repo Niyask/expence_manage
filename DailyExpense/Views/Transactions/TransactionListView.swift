@@ -34,7 +34,7 @@ struct TransactionListView: View {
             EditTransactionView(transaction: tx)
                 .environmentObject(store)
                 .environmentObject(themeContext)
-                .themedScreen()
+                .themedScreen(themeContext: themeContext)
                 .appThemedRoot(appearance: store.settings.appearance)
         }
         .alert("Delete transaction?", isPresented: $showDeleteConfirm) {

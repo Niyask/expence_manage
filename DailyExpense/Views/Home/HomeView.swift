@@ -140,7 +140,7 @@ struct HomeView: View {
                 AddIncomeView()
                     .environmentObject(store)
                     .environmentObject(themeContext)
-                    .themedScreen()
+                    .themedScreen(themeContext: themeContext)
                     .appThemedRoot(appearance: store.settings.appearance)
             }
             .animation(AppAnimations.sheetSpring, value: showAddIncome)
@@ -148,7 +148,7 @@ struct HomeView: View {
                 EditTransactionView(transaction: tx)
                     .environmentObject(store)
                     .environmentObject(themeContext)
-                    .themedScreen()
+                    .themedScreen(themeContext: themeContext)
                     .appThemedRoot(appearance: store.settings.appearance)
             }
             .animation(AppAnimations.sheetSpring, value: transactionToEdit?.id)

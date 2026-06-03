@@ -42,14 +42,16 @@ extension Font {
 }
 
 struct ThemedScreenModifier: ViewModifier {
+    @ObservedObject var themeContext: ThemeContext
+
     func body(content: Content) -> some View {
         content
     }
 }
 
 extension View {
-    func themedScreen() -> some View {
-        modifier(ThemedScreenModifier())
+    func themedScreen(themeContext: ThemeContext) -> some View {
+        modifier(ThemedScreenModifier(themeContext: themeContext))
     }
 
     func appCardSurface(cornerRadius: CGFloat = 14) -> some View {

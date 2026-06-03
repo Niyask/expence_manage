@@ -36,11 +36,12 @@ struct MainTabView: View {
             .padding(.trailing, 20)
             .padding(.bottom, 56)
         }
+        .themedScreen(themeContext: themeContext)
         .sheet(isPresented: $showAddExpense) {
             AddExpenseView()
                 .environmentObject(store)
                 .environmentObject(themeContext)
-                .environment(\.themePalette, themeContext.palette)
+                .themedScreen(themeContext: themeContext)
                 .appThemedRoot(appearance: store.settings.appearance)
         }
     }

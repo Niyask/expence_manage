@@ -34,6 +34,7 @@ struct SummaryCard: View {
                         .foregroundStyle(Color(red: 0.75, green: 1, blue: 0.88))
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.trailing, 12)
 
                 Rectangle()
                     .fill(.white.opacity(0.35))
@@ -53,6 +54,7 @@ struct SummaryCard: View {
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.leading, 12)
             }
             .padding(12)
             .background(Color.black.opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
