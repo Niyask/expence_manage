@@ -42,7 +42,12 @@ final class ExpenseStore: ObservableObject {
     ]
 
     init() {
-        loadPersistedState()
+        if AppScreenshotScreen.isActive {
+            applyScreenshotState(for: AppScreenshotScreen.fromProcessArguments()!)
+            persistenceWritesEnabled = false
+        } else {
+            loadPersistedState()
+        }
         // Existing installs that already have transactions skip the welcome tour once.
         if !settings.hasCompletedOnboarding, !transactions.isEmpty {
             var next = settings
@@ -337,6 +342,17 @@ final class ExpenseStore: ObservableObject {
 
     func openEveningReport(for date: Date = Date()) {
         pendingEveningReportDate = date
+    }
+
+    // MARK: - App Store screenshots
+
+    func applyScreenshotState(for screen: AppScreenshotScreen) {
+        let state = screen == .onboarding
+            ? SampleDataSeeder.makeOnboardingState()
+            : SampleDataSeeder.makePersistedState()
+        transactions = state.transactions
+        tags = state.tags
+        settings = state.settings
     }
 
     // MARK: - Persistence

@@ -22,7 +22,7 @@ struct AddIncomeView: View {
                             Text(store.settings.currencySymbol)
                                 .font(.system(size: 48, weight: .bold))
                                 .foregroundStyle(AppTheme.income)
-                            TextField("0", text: $amountText)
+                            TextField("0.00", text: $amountText.sanitizedAmount())
                                 .font(.system(size: 48, weight: .bold))
                                 .keyboardType(.decimalPad)
                                 .foregroundStyle(AppTheme.income)

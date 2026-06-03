@@ -94,6 +94,7 @@ struct TransactionListView: View {
                 amount: tx.amount,
                 currencySymbol: store.settings.currencyAmountPrefix,
                 currencyLocaleIdentifier: store.settings.currencyLocaleIdentifier,
+                currencyCode: store.settings.currencyCode,
                 isIncome: tx.type == .income
             )
             .contentShape(Rectangle())

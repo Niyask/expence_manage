@@ -3,15 +3,36 @@ import Foundation
 enum MoneyFormat {
     private static var formatterCache: [String: NumberFormatter] = [:]
 
-    private static func decimalFormatter(localeIdentifier: String) -> NumberFormatter {
-        if let cached = formatterCache[localeIdentifier] { return cached }
+    private static func decimalFormatter(localeIdentifier: String, currencyCode: String) -> NumberFormatter {
+        let cacheKey = "\(localeIdentifier)_\(currencyCode)"
+        if let cached = formatterCache[cacheKey] { return cached }
         let f = NumberFormatter()
         f.numberStyle = .decimal
-        f.maximumFractionDigits = 0
         f.locale = Locale(identifier: localeIdentifier)
-        formatterCache[localeIdentifier] = f
+        f.usesGroupingSeparator = true
+        if currencyCode == "JPY" {
+            f.minimumFractionDigits = 0
+            f.maximumFractionDigits = 0
+        } else {
+            f.minimumFractionDigits = 0
+            f.maximumFractionDigits = 2
+        }
+        formatterCache[cacheKey] = f
         return f
     }
+
+    /// Unformatted amount for text fields (e.g. `68.5`, `124.30`).
+    static func plainAmountString(_ amount: Decimal) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.usesGroupingSeparator = false
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = maxFractionDigits
+        return formatter.string(from: amount as NSDecimalNumber) ?? ""
+    }
+
+    private static let maxFractionDigits = 2
 
     private static let timeFormatter: DateFormatter = {
         let f = DateFormatter()
@@ -40,16 +61,21 @@ enum MoneyFormat {
         _ amount: Decimal,
         symbol: String = "$",
         localeIdentifier: String = "en_US",
+        currencyCode: String = "USD",
         signed: Bool = false
     ) -> String {
-        let value = decimalValue(amount)
-        let body = decimalFormatter(localeIdentifier: localeIdentifier)
-            .string(from: NSNumber(value: abs(value))) ?? "0"
+        let formatter = decimalFormatter(
+            localeIdentifier: localeIdentifier,
+            currencyCode: currencyCode
+        )
+        let number = (amount as NSDecimalNumber)
+        let isNegative = number.compare(NSDecimalNumber.zero) == .orderedAscending
+        let body = formatter.string(from: isNegative ? number.multiplying(by: -1) : number) ?? "0"
         if signed {
-            let prefix = value >= 0 ? "+" : "-"
+            let prefix = isNegative ? "-" : "+"
             return "\(prefix)\(symbol)\(body)"
         }
-        if value < 0 { return "-\(symbol)\(body)" }
+        if isNegative { return "-\(symbol)\(body)" }
         return "\(symbol)\(body)"
     }
 
