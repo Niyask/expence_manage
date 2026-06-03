@@ -23,6 +23,8 @@
 		9168E72BDE8CC1F832B59632 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53BA67EBDFC1BC66E3145BA5 /* RootView.swift */; };
 		917B95160EC6CE25CE856173 /* NotificationScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F03A55F53C791857E2FC17A /* NotificationScheduler.swift */; };
 		92CC415220362F279FC3477C /* InputValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856653E361A2869E882A8E10 /* InputValidator.swift */; };
+		B1C2D3E4F5A60718293A4B5C /* AppScreenshotMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5D /* AppScreenshotMode.swift */; };
+		C2D3E4F5A6B718293A4B5C6D /* ScreenshotCaptureHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6A718293A4B5C6E /* ScreenshotCaptureHost.swift */; };
 		948164851328F38E8EA61094 /* ExpenseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B047353F862568CFE1264A /* ExpenseStore.swift */; };
 		9883CFDEC1E76BCAC230F785 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431C6C0679EBCF5C892FB2D7 /* MainTabView.swift */; };
 		9DC80C7BA7D8748717764073 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87C393BF503F8AEF1E7821B8 /* OnboardingView.swift */; };
@@ -54,6 +56,8 @@
 		6ADE455B9700F5FD7A05E513 /* AppCurrency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCurrency.swift; sourceTree = "<group>"; };
 		7F03A55F53C791857E2FC17A /* NotificationScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationScheduler.swift; sourceTree = "<group>"; };
 		856653E361A2869E882A8E10 /* InputValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputValidator.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B5D /* AppScreenshotMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppScreenshotMode.swift; sourceTree = "<group>"; };
+		B2C3D4E5F6A718293A4B5C6E /* ScreenshotCaptureHost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotCaptureHost.swift; sourceTree = "<group>"; };
 		87C393BF503F8AEF1E7821B8 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		95904D650E95BF88A278FF7B /* Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
 		9AE57479E486594304BB1ABC /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -95,6 +99,7 @@
 		4C22A37362ACCDCF0B6AE626 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				A1B2C3D4E5F60718293A4B5D /* AppScreenshotMode.swift */,
 				350C25D9FD0D99611EF5204E /* AppAnimations.swift */,
 				DDBDE8A8A2263D6DEA300126 /* Formatters.swift */,
 				856653E361A2869E882A8E10 /* InputValidator.swift */,
@@ -166,6 +171,7 @@
 			isa = PBXGroup;
 			children = (
 				53BA67EBDFC1BC66E3145BA5 /* RootView.swift */,
+				B2C3D4E5F6A718293A4B5C6E /* ScreenshotCaptureHost.swift */,
 			);
 			path = Root;
 			sourceTree = "<group>";
@@ -310,6 +316,7 @@
 				560F715DD4C482D3338BE8A4 /* AppAnimations.swift in Sources */,
 				5927C358D7E2FC8609506B9A /* AppCurrency.swift in Sources */,
 				2DAD536D38DDAA78B1B951B2 /* AppNotificationHandler.swift in Sources */,
+				B1C2D3E4F5A60718293A4B5C /* AppScreenshotMode.swift in Sources */,
 				0A10DA91F69126BFC22EE0DF /* AppTheme.swift in Sources */,
 				E1F2A3B4C5D6677889900112 /* ThemePalette.swift in Sources */,
 				621AD6E955416A7777CF5C73 /* DailyExpenseApp.swift in Sources */,
@@ -326,6 +333,7 @@
 				9DC80C7BA7D8748717764073 /* OnboardingView.swift in Sources */,
 				F19D4DCEA069E0F8A1F9ECDA /* PersistenceService.swift in Sources */,
 				9168E72BDE8CC1F832B59632 /* RootView.swift in Sources */,
+				C2D3E4F5A6B718293A4B5C6D /* ScreenshotCaptureHost.swift in Sources */,
 				7A01EEA6F22EC35E408B7E8E /* SettingsView.swift in Sources */,
 				3E9C36A350738447E29F1C76 /* SharedComponents.swift in Sources */,
 				A416522C05E982B0181CC0A6 /* Transaction.swift in Sources */,

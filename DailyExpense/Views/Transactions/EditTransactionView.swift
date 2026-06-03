@@ -16,8 +16,7 @@ struct EditTransactionView: View {
 
     init(transaction: Transaction) {
         self.transaction = transaction
-        let amount = MoneyFormat.decimalValue(transaction.amount)
-        _amountText = State(initialValue: amount == floor(amount) ? String(Int(amount)) : String(amount))
+        _amountText = State(initialValue: InputValidator.amountEditText(for: transaction.amount))
         _note = State(initialValue: transaction.note)
         _date = State(initialValue: transaction.date)
         _entryType = State(initialValue: transaction.type)
@@ -39,7 +38,7 @@ struct EditTransactionView: View {
                             Text(store.settings.currencySymbol)
                                 .font(.system(size: 48, weight: .bold))
                                 .foregroundStyle(entryType == .income ? AppTheme.income : palette.textPrimary)
-                            TextField("0", text: $amountText)
+                            TextField("0.00", text: $amountText.sanitizedAmount())
                                 .font(.system(size: 48, weight: .bold))
                                 .keyboardType(.decimalPad)
                                 .foregroundStyle(entryType == .income ? AppTheme.income : palette.textPrimary)

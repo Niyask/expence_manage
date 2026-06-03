@@ -5,8 +5,9 @@ import UserNotifications
 final class NotificationScheduler {
     static let shared = NotificationScheduler()
 
-    static let eveningDateUserInfoKey = "eveningReportDate"
-    static let eveningIdentifier = "com.dailyexpense.bedtime-report"
+    /// String keys are safe to read from `nonisolated` notification delegate callbacks.
+    nonisolated static let eveningDateUserInfoKey = "eveningReportDate"
+    nonisolated static let eveningIdentifier = "com.dailyexpense.bedtime-report"
 
     private let center = UNUserNotificationCenter.current()
 

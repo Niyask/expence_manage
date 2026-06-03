@@ -7,6 +7,7 @@ struct SummaryCard: View {
     let expenses: Decimal
     let currencySymbol: String
     var currencyLocaleIdentifier: String = "en_US"
+    var currencyCode: String = "USD"
     /// Shown under total expenses — week-based spend only.
     var weeklyExpenses: Decimal?
 
@@ -20,7 +21,7 @@ struct SummaryCard: View {
                 .font(.appSmall())
                 .foregroundStyle(.white.opacity(0.85))
 
-            Text(MoneyFormat.string(netBalance, symbol: currencySymbol, localeIdentifier: currencyLocaleIdentifier, signed: true))
+            Text(MoneyFormat.string(netBalance, symbol: currencySymbol, localeIdentifier: currencyLocaleIdentifier, currencyCode: currencyCode, signed: true))
                 .font(.system(size: 34, weight: .bold))
                 .foregroundStyle(.white)
 
@@ -29,7 +30,7 @@ struct SummaryCard: View {
                     Text("Total Income")
                         .font(.appSmall())
                         .foregroundStyle(.white.opacity(0.85))
-                    Text(MoneyFormat.string(income, symbol: currencySymbol, localeIdentifier: currencyLocaleIdentifier))
+                    Text(MoneyFormat.string(income, symbol: currencySymbol, localeIdentifier: currencyLocaleIdentifier, currencyCode: currencyCode))
                         .font(.system(size: 15, weight: .bold))
                         .foregroundStyle(Color(red: 0.75, green: 1, blue: 0.88))
                 }
@@ -44,11 +45,11 @@ struct SummaryCard: View {
                     Text("Total Expenses")
                         .font(.appSmall())
                         .foregroundStyle(.white.opacity(0.85))
-                    Text(MoneyFormat.string(expenses, symbol: currencySymbol, localeIdentifier: currencyLocaleIdentifier))
+                    Text(MoneyFormat.string(expenses, symbol: currencySymbol, localeIdentifier: currencyLocaleIdentifier, currencyCode: currencyCode))
                         .font(.system(size: 15, weight: .bold))
                         .foregroundStyle(Color(red: 1, green: 0.82, blue: 0.82))
                     if let weeklyExpenses {
-                        Text("This week: \(MoneyFormat.string(weeklyExpenses, symbol: currencySymbol, localeIdentifier: currencyLocaleIdentifier))")
+                        Text("This week: \(MoneyFormat.string(weeklyExpenses, symbol: currencySymbol, localeIdentifier: currencyLocaleIdentifier, currencyCode: currencyCode))")
                             .font(.system(size: 10, weight: .medium))
                             .foregroundStyle(.white.opacity(0.75))
                     }
@@ -139,6 +140,7 @@ struct TransactionRow: View {
     let amount: Decimal
     let currencySymbol: String
     var currencyLocaleIdentifier: String = "en_US"
+    var currencyCode: String = "USD"
     let isIncome: Bool
 
     var body: some View {
@@ -161,8 +163,8 @@ struct TransactionRow: View {
 
             Text(
                 isIncome
-                    ? MoneyFormat.string(amount, symbol: currencySymbol, localeIdentifier: currencyLocaleIdentifier, signed: true)
-                    : "-\(MoneyFormat.string(amount, symbol: currencySymbol, localeIdentifier: currencyLocaleIdentifier))"
+                    ? MoneyFormat.string(amount, symbol: currencySymbol, localeIdentifier: currencyLocaleIdentifier, currencyCode: currencyCode, signed: true)
+                    : "-\(MoneyFormat.string(amount, symbol: currencySymbol, localeIdentifier: currencyLocaleIdentifier, currencyCode: currencyCode))"
             )
                 .font(.system(size: 15, weight: .bold))
                 .foregroundStyle(isIncome ? AppTheme.income : AppTheme.expense)

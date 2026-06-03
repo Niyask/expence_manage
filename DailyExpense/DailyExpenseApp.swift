@@ -6,28 +6,39 @@ struct DailyExpenseApp: App {
     @StateObject private var themeContext = ThemeContext()
     private let notificationHandler = AppNotificationHandler()
 
+    private var screenshotScreen: AppScreenshotScreen? {
+        AppScreenshotScreen.fromProcessArguments()
+    }
+
     var body: some Scene {
         WindowGroup {
-            RootView()
-                .environmentObject(store)
-                .environmentObject(themeContext)
-                .themedScreen(themeContext: themeContext)
-                .appThemedRoot(appearance: store.settings.appearance)
-                .id(themeContext.revision)
-                .onAppear {
-                    notificationHandler.configure(store: store)
-                    applyTheme(store.settings.appearance)
+            Group {
+                if let screen = screenshotScreen {
+                    ScreenshotCaptureHost(screen: screen)
+                } else {
+                    RootView()
                 }
-                .onChange(of: store.settings.appearance) { newValue in
-                    applyTheme(newValue)
+            }
+            .environmentObject(store)
+            .environmentObject(themeContext)
+            .themedScreen(themeContext: themeContext)
+            .appThemedRoot(appearance: store.settings.appearance)
+            .id(themeContext.revision)
+            .onAppear {
+                notificationHandler.configure(store: store)
+                applyTheme(store.settings.appearance)
+            }
+            .onChange(of: store.settings.appearance) { newValue in
+                applyTheme(newValue)
+            }
+            .task {
+                guard screenshotScreen == nil else { return }
+                if store.settings.hasCompletedOnboarding,
+                   store.settings.notificationsEnabled {
+                    _ = await store.requestNotificationPermission()
+                    await store.refreshNotificationSchedule()
                 }
-                .task {
-                    if store.settings.hasCompletedOnboarding,
-                       store.settings.notificationsEnabled {
-                        _ = await store.requestNotificationPermission()
-                        await store.refreshNotificationSchedule()
-                    }
-                }
+            }
         }
     }
 

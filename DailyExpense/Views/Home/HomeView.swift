@@ -6,6 +6,7 @@ struct HomeView: View {
     @EnvironmentObject private var themeContext: ThemeContext
     @Binding var showAddExpense: Bool
     @Binding var selectedTab: Int
+    var openAllTransactionsOnAppear: Bool = false
     @State private var showAddIncome = false
     @State private var showWeekly = false
     @State private var showEveningReport = false
@@ -25,6 +26,7 @@ struct HomeView: View {
                         expenses: store.lifetimeExpenses,
                         currencySymbol: store.settings.currencyAmountPrefix,
                         currencyLocaleIdentifier: store.settings.currencyLocaleIdentifier,
+                        currencyCode: store.settings.currencyCode,
                         weeklyExpenses: store.expenseTotalThisWeek(containing: today)
                     )
                     .appearOnLoad(delay: 0)
@@ -108,6 +110,7 @@ struct HomeView: View {
                                     amount: tx.amount,
                                     currencySymbol: store.settings.currencyAmountPrefix,
                                     currencyLocaleIdentifier: store.settings.currencyLocaleIdentifier,
+                                    currencyCode: store.settings.currencyCode,
                                     isIncome: tx.type == .income
                                 )
                                 .onTapGesture { transactionToEdit = tx }
@@ -160,6 +163,11 @@ struct HomeView: View {
             }
             .navigationDestination(isPresented: $showAllTransactions) {
                 TransactionListView()
+            }
+            .onAppear {
+                if openAllTransactionsOnAppear {
+                    showAllTransactions = true
+                }
             }
         }
     }

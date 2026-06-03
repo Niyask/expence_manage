@@ -3,6 +3,9 @@ import SwiftUI
 struct MainTabView: View {
     @EnvironmentObject private var store: ExpenseStore
     @EnvironmentObject private var themeContext: ThemeContext
+    var initialTab: Int = 0
+    var presentAddExpenseOnAppear: Bool = false
+    var openAllTransactionsOnAppear: Bool = false
     @State private var selectedTab = 0
     @State private var showAddExpense = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -10,7 +13,11 @@ struct MainTabView: View {
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             TabView(selection: $selectedTab) {
-                HomeView(showAddExpense: $showAddExpense, selectedTab: $selectedTab)
+                HomeView(
+                    showAddExpense: $showAddExpense,
+                    selectedTab: $selectedTab,
+                    openAllTransactionsOnAppear: openAllTransactionsOnAppear
+                )
                     .tabItem { Label("Home", systemImage: "house.fill") }
                     .tag(0)
 
@@ -34,6 +41,12 @@ struct MainTabView: View {
             .padding(.bottom, 56)
         }
         .themedScreen(themeContext: themeContext)
+        .onAppear {
+            selectedTab = initialTab
+            if presentAddExpenseOnAppear {
+                showAddExpense = true
+            }
+        }
         .sheet(isPresented: $showAddExpense) {
             AddExpenseView()
                 .environmentObject(store)

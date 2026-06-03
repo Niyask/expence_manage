@@ -85,6 +85,7 @@ struct AppSettings: Codable, Equatable {
             amount,
             symbol: currencyAmountPrefix,
             localeIdentifier: currencyLocaleIdentifier,
+            currencyCode: currencyCode,
             signed: signed
         )
     }
