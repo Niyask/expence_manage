@@ -11,7 +11,7 @@ Built for **iOS 17+** with production-minded defaults: local persistence, notifi
 | Drupal concept | iOS equivalent in this project |
 |----------------|------------------------------|
 | Entity / fields | `Transaction`, `ExpenseTag` models |
-| Config export | `AppSettings` in `state.json` |
+| Config export | `AppSettings` in `state.json` (persists across App Store updates — see [docs/DATA_PERSISTENCE.md](docs/DATA_PERSISTENCE.md)) |
 | Cache | In-memory `ExpenseStore` + debounced disk save |
 | Cron | `UNCalendarNotificationTrigger` (evening report) |
 | Form validation | `InputValidator` before save |

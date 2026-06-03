@@ -21,6 +21,8 @@ final class ExpenseStore: ObservableObject {
 
     private var persistTask: Task<Void, Never>?
     private var notificationTask: Task<Void, Never>?
+    /// Prevents saving empty in-memory state over an existing file when load fails.
+    private var persistenceWritesEnabled = false
 
     static let defaultTags: [ExpenseTag] = [
         ExpenseTag(name: "Petrol", emoji: "⛽", color: Color(red: 0.976, green: 0.451, blue: 0.086), type: .expense),
@@ -340,13 +342,24 @@ final class ExpenseStore: ObservableObject {
     // MARK: - Persistence
 
     private func loadPersistedState() {
-        guard let state = PersistenceService.shared.load() else { return }
-        transactions = state.transactions
-        if !state.tags.isEmpty { tags = state.tags }
-        settings = state.settings
+        switch PersistenceService.shared.loadWithRecovery() {
+        case .loaded(let state):
+            transactions = state.transactions
+            if !state.tags.isEmpty { tags = state.tags }
+            settings = state.settings
+            persistenceWritesEnabled = true
+        case .freshInstall:
+            persistenceWritesEnabled = true
+        case .corruptFileOnDisk:
+            #if DEBUG
+            print("[ExpenseStore] Persisted file exists but could not be loaded; skipping writes to avoid data loss")
+            #endif
+            persistenceWritesEnabled = false
+        }
     }
 
     private func schedulePersist() {
+        guard persistenceWritesEnabled else { return }
         persistTask?.cancel()
         let snapshot = PersistenceService.PersistedState(
             transactions: transactions,
